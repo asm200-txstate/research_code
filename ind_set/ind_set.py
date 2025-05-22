@@ -1,6 +1,6 @@
 import numpy as np
 import gurobipy as gp
-from gurobipy as GRB
+from gurobipy import GRB
 
 if __name__ == "__main__":
     print("Here in main")
