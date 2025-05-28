@@ -24,6 +24,7 @@ class GraphVisual:
     ## Description: Displays the randomized graph to the terminal.
     ## Argument(s): None
     def display(self):
+        print("Here ...")
         pass
     
 class RandGraph:
@@ -84,3 +85,6 @@ if __name__ == "__main__":
     G_rand = RandGraph(v_count, e_count)
     V = G_rand.generate_V()
     E = G_rand.generate_E()
+    
+    G_disp = GraphVisual(V, E)
+    G_disp.display()
