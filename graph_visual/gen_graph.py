@@ -24,7 +24,16 @@ class GraphVisual:
     ## Description: Displays the randomized graph to the terminal.
     ## Argument(s): None
     def display(self):
-        print("Here ...")
+        G = nx.Graph()
+        G.add_nodes_from(self.V)
+        G.add_edges_from(self.E)
+        
+        pos = nx.circular_layout(G, 2)
+        
+        nx.draw_networkx(G, pos)
+        plt.title(f"Induced Subgraph for $K_{{{len(self.V)}}}$")
+        plt.show()
+        
         pass
     
 class RandGraph:
