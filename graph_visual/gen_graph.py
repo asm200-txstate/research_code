@@ -60,8 +60,8 @@ if __name__ == "__main__":
     e_count = int(sys.argv[2])                      ## Edge Count
     
     if v_count < 0:                                 ## Check for valid |V|
-    print("Invaid vertex count, setting |V| = 1")
-    v_count = 1
+        print("Invaid vertex count, setting |V| = 1")
+        v_count = 1
     
     max_simple = (v_count * (v_count - 1)) // 2     ## Check for valid |E| / max_simple := C(|V|,2)
     if e_count > max_simple:
