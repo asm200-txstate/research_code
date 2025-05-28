@@ -5,8 +5,6 @@
 import sys
 import networkx as nx
 import matplotlib.pyplot as plt
-import gurobipy as gp
-import gurobipy as GRB
 from random import randint
 
 class GraphVisual:
@@ -16,6 +14,7 @@ class GraphVisual:
     ## Argument(s):
     ## * V: Set of vertices to G.
     ## * E: Set of edges to G.
+    ## Return(s): None
     def __init__(self, V, E):
         self.V = V
         self.E = E
@@ -23,6 +22,7 @@ class GraphVisual:
     ## Name: display_graph
     ## Description: Displays the randomized graph to the terminal.
     ## Argument(s): None
+    ## Return(s): None
     def display(self):
         G = nx.Graph()
         G.add_nodes_from(self.V)
@@ -33,8 +33,6 @@ class GraphVisual:
         nx.draw_networkx(G, pos)
         plt.title(f"Induced Subgraph for $K_{{{len(self.V)}}}$")
         plt.show()
-        
-        pass
     
 class RandGraph:
     ## Name: __init__ (Driver)
@@ -42,58 +40,47 @@ class RandGraph:
     ##              V and E, respectively, to the graph G = (V,E).
     ## Argument(s):
     ## * card_v: The number of vertices to G = (V,E)
-    ## * card_e: The number of edges to G = (V,E)
-    def __init__(self, card_v, card_e):
+    ## Return(s): None
+    def __init__(self, card_v):
         self.card_v = card_v
-        self.card_e = card_e
-
+        
     ## Name: generate_V
     ## Description: Generates the set of vertices, V, to the graph G = (V,E).
     ## Argument(s): None
+    ## Return(s): None
     def generate_V(self):
         V = []                                              ## Empty list of vertices to G = (V,E)
-        for v in range(self.card_v): V.append(f"v{v}")
+        for v in range(self.card_v): V.append(v)
         return V
             
     ## Name: generate_E
     ## Description: Generates the set of edges, E, to the graph G = (V,E).
     ## Argument(s): None
+    ## Return(s): The set of edges, E, to G = (V,E)
     def generate_E(self):
-        E = []                                              ## Empty list of edges to G = (V,E)
+        E = []                                                      ## Empty list of edges to G = (V,E)
         
-        for i in range(self.card_v):                        ## Generate edges to K_{card_v}
+        for i in range(self.card_v):                                ## Generate edges to K_{card_v}
             for j in range(self.card_v):
-                if i < j: E.append([f"v{i}",f"v{j}"])
+                add_edge = randint(0,1)                             ## Randomly decide whether an edge is added
+                if i < j and add_edge: E.append([i,j])
         
-        e_count = len(E) - self.card_e                      ## Remove |E| - card_e edges at random
-        for _ in range(e_count):
-            e_idx = randint(0, len(E)-1)
-            try: del E[e_idx]
-            except IndexError as e: print(f"Error occured in indexing, out of bounds!")
-
         return E
-        
+
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(f"Invalid argument count: {len(sys.argv)} - Try again ...")
         exit()
     
-    v_count = int(sys.argv[1])                              ## Vertex Count
-    e_count = int(sys.argv[2])                              ## Edge Count
-    
-    if v_count < 0:                                         ## Check for valid |V|
+    v_count = int(sys.argv[1])                                      ## Vertex Count
+    if v_count < 0:                                                 ## Check for valid |V|
         print("Invaid vertex count, setting |V| = 1")
         v_count = 1
     
-    max_simple = (v_count * (v_count - 1)) // 2             ## Check for valid |E| | max_simple := C(|V|,2)
-    if e_count > max_simple:
-        print(f"Invalid edge count, setting |E| = {max_simple}")
-        e_count = max_simple
-    
     ## Generating a random graph
-    G_rand = RandGraph(v_count, e_count)
+    G_rand = RandGraph(v_count)
     V = G_rand.generate_V()
     E = G_rand.generate_E()
     
-    G_disp = GraphVisual(V, E)
+    G_disp = GraphVisual(V,E)
     G_disp.display()
