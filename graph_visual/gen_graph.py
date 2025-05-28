@@ -11,9 +11,12 @@ from random import randint
 
 class GraphVisual:
     def __init__(self): pass
+    def display(self): pass
     
 class RandGraph:
     def __init__(self): pass
+    def generate_V(self): pass
+    def generate_E(self): pass
 
 if __name__ == "__main__":
     pass
