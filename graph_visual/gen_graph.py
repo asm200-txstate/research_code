@@ -56,14 +56,14 @@ if __name__ == "__main__":
         print(f"Invalid argument count: {len(sys.argv)} - Try again ...")
         exit()
     
-    v_count = int(sys.argv[1])                      ## Vertex Count
-    e_count = int(sys.argv[2])                      ## Edge Count
+    v_count = int(sys.argv[1])                          ## Vertex Count
+    e_count = int(sys.argv[2])                          ## Edge Count
     
-    if v_count < 0:                                 ## Check for valid |V|
+    if v_count < 0:                                     ## Check for valid |V|
         print("Invaid vertex count, setting |V| = 1")
         v_count = 1
     
-    max_simple = (v_count * (v_count - 1)) // 2     ## Check for valid |E| / max_simple := C(|V|,2)
+    max_simple = (v_count * (v_count - 1)) // 2         ## Check for valid |E| / max_simple := C(|V|,2)
     if e_count > max_simple:
         print(f"Invalid edge count, setting |E| = {max_simple}")
         e_count = max_simple
