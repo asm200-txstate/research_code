@@ -6,6 +6,14 @@ import sys
 import networkx as nx
 import matplotlib.pyplot as plt
 import gurobipy as gp
-from gurobipy as GRB
+import gurobipy as GRB
 from random import randint
 
+class GraphVisual:
+    def __init__(self): pass
+    
+class RandGraph:
+    def __init__(self): pass
+
+if __name__ == "__main__":
+    pass
