@@ -41,7 +41,7 @@ class RandGraph:
     ## Description: Generates the set of vertices, V, to the graph G = (V,E).
     ## Argument(s): None
     def generate_V(self):
-        V = []                                              # Empty list of vertices to G = (V,E)
+        V = []                                              ## Empty list of vertices to G = (V,E)
         for v in range(self.card_v): V.append(f"v{v}")
         return V
             
@@ -49,24 +49,38 @@ class RandGraph:
     ## Description: Generates the set of edges, E, to the graph G = (V,E).
     ## Argument(s): None
     def generate_E(self):
-        pass
+        E = []                                              ## Empty list of edges to G = (V,E)
+        
+        for i in range(self.card_v):                        ## Generate edges to K_{card_v}
+            for i in range(self.card_v):
+                if i < j: E.append([f"v{i}",f"v{j}"])
+        
+        e_count = len(E) - self.card_e                      ## Remove |E| - card_e edges at random
+        for _ in range(e_count):
+            e_idx = randint(0, len(E)-1)
+            try: del E[e_idx]
+            except IndexError as e: print(f"Error occured in indexing, out of bounds!")
+
+        return E
         
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print(f"Invalid argument count: {len(sys.argv)} - Try again ...")
         exit()
     
-    v_count = int(sys.argv[1])                          ## Vertex Count
-    e_count = int(sys.argv[2])                          ## Edge Count
+    v_count = int(sys.argv[1])                              ## Vertex Count
+    e_count = int(sys.argv[2])                              ## Edge Count
     
-    if v_count < 0:                                     ## Check for valid |V|
+    if v_count < 0:                                         ## Check for valid |V|
         print("Invaid vertex count, setting |V| = 1")
         v_count = 1
     
-    max_simple = (v_count * (v_count - 1)) // 2         ## Check for valid |E| / max_simple := C(|V|,2)
+    max_simple = (v_count * (v_count - 1)) // 2             ## Check for valid |E| | max_simple := C(|V|,2)
     if e_count > max_simple:
         print(f"Invalid edge count, setting |E| = {max_simple}")
         e_count = max_simple
     
     ## Generating a random graph
     G_rand = RandGraph(v_count, e_count)
+    V = G_rand.generate_V()
+    E = G_rand.generate_E()
