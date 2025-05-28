@@ -52,7 +52,7 @@ class RandGraph:
         E = []                                              ## Empty list of edges to G = (V,E)
         
         for i in range(self.card_v):                        ## Generate edges to K_{card_v}
-            for i in range(self.card_v):
+            for j in range(self.card_v):
                 if i < j: E.append([f"v{i}",f"v{j}"])
         
         e_count = len(E) - self.card_e                      ## Remove |E| - card_e edges at random
