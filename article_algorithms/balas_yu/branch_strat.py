@@ -38,7 +38,7 @@ class GraphVisual:
         
         pos = nx.circular_layout(G, 2)
         
-        nx.draw_networkx(G, pos)
+        nx.draw_networkx(G, pos, width=2, node_size=800, font_size=12, font_color='white')
         plt.title(f"Induced Subgraph for $K_{{{len(self.V)}}}$")
         plt.show()
 
