@@ -102,34 +102,42 @@ class RandIndSet:
                     if [s,v] in E: invalid = True                   ## Checks if the vertex has edges that aren't included to the pre-constructed set, U
                 if not invalid: S.append(v)
         
-        return S                                                    ## Store the final result
+        return S                                                    ## Return the final result
         
 class BBStrat:
     ## Name: __init__ (driver)
-    ## Description: Initializes the graph G = (V,E) and independent set S
+    ## Description: Initializes the graph G = (V,E)
     ## Argument(s):
     ## * V - The set of vertices to the graph G = (V, E)
     ## * E - The set of edges to the grpah G = (V, E)
-    ## * S - The subset of vertices, S \subseteq V, that's an independent set to the graph G = (V, E)
     ## Return(s): None
-    def __init__(self, U, V, S):
-        self.U = U
+    def __init__(self, V, E):
         self.V = V
-        self.S = S
+        self.E = E
     
     ## Name: find_ind_set
     ## Description: Find an independent set U \subseteq V such that \alpha(G[U]) <= |S|
+    ## Argument(s):
+    ## * U - A subset of vertices to the induced subgraph, G[U]
+    ## Return(s):
+    ## * Et - Denoted as \tilde{E}, the set of all edges to the induced subgraph
+    def edge_set(self, U):
+        Et = []
+        
+        for e in self.E:
+            u, v = e
+            if u in U and v in U:
+                Et.append(e)                                        ## Append if both endpoints of e are in U
+        
+        return Et
+    
+    ## Name: max_ind_set
+    ## Description: Uses an IP to determine the maximum independent set to an induced subgraph, G[U], of G = (U,V)
     ## Argument(s): None
     ## Return(s): None
-    def find_ind_set(self): pass
-        
-    ## Name: max_ind_set
-    ## Description: Uses IP to determine the maximum independent set to an induced subgraph, G[U], of G = (U,V)
-    ## Argument(s): ...
-    ## Return(s): ...
-    def max_ind_set(self): pass
+    def gen_max_ind_set(self, U, Et):
+        pass
     
-        
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(f"Invalid argument count: {len(sys.argv)} - Try again ...")
@@ -151,7 +159,24 @@ if __name__ == "__main__":
 
 #    IndSet.find_ind_set()                                          ## Finds an independent set U \subseteq V where \alpha(G[U]) <= |S|
     
-    for s in S: print(s)                                            ## Display the generated independent set
-        
+#    for s in S: print(s)                                            ## Display the generated independent set
+            
+    ## Perform the Branch and Bound Strategy by Balas & Yu
+    BB = BBStrat(V,E)
+    
+    ## Step 1a: Find a subset to V called U
+    U = []
+    for v in V:
+        if random() < 0.5: U.append(v)                              ## Select some vertices
+    
+    ## Step 1b: Find the edges to the induced subgraph, G[U]
+    Et = BB.edge_set(U)
+    
+    ## Step 1c: Find the maximal independent set to the induced subgraph of G[U] := (U, \tilde{E})
+    a_Gu = BB.gen_max_ind_set(U,Et)
+    
+    
+    
+    
     G_disp = GraphVisual(V,E)
     G_disp.display()
