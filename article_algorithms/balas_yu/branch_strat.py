@@ -182,18 +182,14 @@ class BBStrat:
             
         c = {v : cost_coeff[i] for i, v in enumerate(U)}
 
-        # Objective Function: max c'x
+        ## Objective Function: max c'x
         objective = gp.quicksum(c[v] * x[v] for v in U)
         model.setObjective(objective, gp.GRB.MAXIMIZE)
     
-        # Perform optimization
+        ## Perform optimization
         model.optimize()
         
-#        # Display optimal solution
-#        print("Optimal Solution: ")
-#        for v in model.getVars():
-#            print(f"{v.VarName}, {v.X:.0f}")
-            
+        ## Returning the optimal cost (max c'x)
         opt_cost = model.ObjVal
         
         return opt_cost
@@ -212,7 +208,7 @@ class BBStrat:
         Vi = []
         
         Ni = []
-        for e in self.E:
+        for e in self.E: pass
     
 if __name__ == "__main__":
     if len(sys.argv) < 2:
