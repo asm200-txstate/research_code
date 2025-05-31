@@ -9,6 +9,8 @@ import sys
 import networkx as nx
 import matplotlib.pyplot as plt
 from random import random
+import gurobipy as gp
+from gurobipy import GRB
 
 # Step 1: Generate an arbitrary graph G = (V,E) and independent set S \subset V
 # Step 2: Find an independent set U \subset V such that \alpha(G(U)) \leq V
@@ -23,7 +25,7 @@ class GraphVisual:
     ## * V: Set of vertices to G.
     ## * E: Set of edges to G.
     ## Return(s): None
-    def __init__(self, V, E):
+    def __init__(self,V,E):
         self.V = V
         self.E = E
 
@@ -41,7 +43,31 @@ class GraphVisual:
         nx.draw_networkx(G, pos, width=2, node_size=800, font_size=12, font_color='white')
         plt.title(f"Induced Subgraph for $K_{{{len(self.V)}}}$")
         plt.show()
-
+    
+    ## Name: disp_ind_subgraph
+    ## Description: Displays the induced subgraph, G[U] := (U,\tilde{E}), within the graph G=(V,E).
+    ## Argument(s): None
+    ## Return(s): None
+    def disp_ind_subgraph(self,U,Et):
+        G = nx.Graph()
+        G.add_nodes_from(self.V)
+        G.add_edges_from(self.E)
+        
+        pos = nx.circular_layout(G, 2)
+        
+        extras = {"node_size" : 800}                                ## Supplemental details to networkx
+        
+        nx.draw_networkx(G, pos, width=3, font_size=18, font_color='white', **extras)
+        
+        ## Node Updates
+        nx.draw_networkx_nodes(G, pos, nodelist=U, node_color="tab:red", **extras)
+        
+        ## Edge Updates
+        nx.draw_networkx_edges(G, pos, width=3, edgelist=Et, edge_color="tab:red", **extras)
+        
+        plt.title(f"Test...")
+        plt.show()
+    
 class RandGraph:
     ## Name: __init__ (Driver)
     ## Description: Initializes the number of vertices and edges,
@@ -90,7 +116,7 @@ class RandIndSet:
     ## Name: gen_ind_set
     ## Description: Generates a random independent set U \subseteq S to G = (V,E).
     ## Argument(s): None
-    ## Return(s): None
+    ## Return(s): An independent set S \subseteq V
     def gen_ind_set(self):
         S = []                                                      ## Independent set S
         
@@ -131,12 +157,62 @@ class BBStrat:
         
         return Et
     
-    ## Name: max_ind_set
+    ## Name: mis_cost
     ## Description: Uses an IP to determine the maximum independent set to an induced subgraph, G[U], of G = (U,V)
     ## Argument(s): None
     ## Return(s): None
-    def gen_max_ind_set(self, U, Et):
-        pass
+    def mis_cost(self, U, Et):
+    
+        model = gp.Model("mis_model")
+        model.setParam("OutputFlag", 0)                             ## Prevent all comments from spamming terminal
+        
+        x = model.addVars(U, vtype=GRB.BINARY, name="DV: x")
+        
+        ## Edge Constraints
+        for [u,v] in Et:
+            model.addConstr(x[u] + x[v] <= 1, f"C1 - Edge: ({u},{v})")
+            
+        ## Vertex Constraints
+        for u in U:
+            model.addConstr(x[u] >= 0, f"C2: {u}")
+
+        cost_coeff = []
+        for v in U:
+            cost_coeff.append(1)                                    ## Unweighted maximum independent set
+            
+        c = {v : cost_coeff[i] for i, v in enumerate(U)}
+
+        # Objective Function: max c'x
+        objective = gp.quicksum(c[v] * x[v] for v in U)
+        model.setObjective(objective, gp.GRB.MAXIMIZE)
+    
+        # Perform optimization
+        model.optimize()
+        
+#        # Display optimal solution
+#        print("Optimal Solution: ")
+#        for v in model.getVars():
+#            print(f"{v.VarName}, {v.X:.0f}")
+            
+        opt_cost = model.ObjVal
+        
+        return opt_cost
+        
+    ##
+    ##
+    ##
+    ##
+    def mis_set(self): pass
+    
+    ##
+    ##
+    ##
+    ##
+    def gen_vi(self, VnU, v):
+        Vi = []
+        
+        Ni = []
+        for e in self.E:
     
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -156,27 +232,37 @@ if __name__ == "__main__":
     ## Generating a random independent set of vertices to G = (V,E)
     Rand_IS = RandIndSet(V,E)
     S = Rand_IS.gen_ind_set()                                       ## Generating a random independent set S
-
-#    IndSet.find_ind_set()                                          ## Finds an independent set U \subseteq V where \alpha(G[U]) <= |S|
-    
-#    for s in S: print(s)                                            ## Display the generated independent set
             
     ## Perform the Branch and Bound Strategy by Balas & Yu
     BB = BBStrat(V,E)
     
-    ## Step 1a: Find a subset to V called U
     U = []
+    valid = False                                                   ## Flag to whether alpha(G[U]) <= |S|
+    while not valid:
+        ## Step 1a: Find a subset to V called U
+        U = []                                                      ## Reset after each iteration
+        for v in V:
+            if random() < 0.5: U.append(v)                          ## Select some vertices
+        
+        ## Step 1b: Find the edges to the induced subgraph, G[U]
+        Et = BB.edge_set(U)
+        
+        ## Step 1c: Find the maximal independent set to the induced subgraph of G[U] := (U, \tilde{E})
+        a_Gu = BB.mis_cost(U, Et)
+        
+        ## Step 1d: Check if alpha(G[U]) <= |S|
+        if a_Gu <= len(S): valid = True
+        
+#    print(f"alpha(G[U]) = {a_Gu}")
+#    print(f"|S| = {len(S)}")
+    
+    ## Step 2: Order vertices of V\U as x_{1}, ..., x_{k}
+    VnU = []
     for v in V:
-        if random() < 0.5: U.append(v)                              ## Select some vertices
+        if v not in U: VnU.append(v)                                ## Already ordered, so find vertices in V\U
     
-    ## Step 1b: Find the edges to the induced subgraph, G[U]
-    Et = BB.edge_set(U)
-    
-    ## Step 1c: Find the maximal independent set to the induced subgraph of G[U] := (U, \tilde{E})
-    a_Gu = BB.gen_max_ind_set(U,Et)
-    
-    
-    
+    for v in VnU:
+        Vi = BB.gen_vi(VnU, v)
     
     G_disp = GraphVisual(V,E)
-    G_disp.display()
+    G_disp.disp_ind_subgraph(U,Et)
