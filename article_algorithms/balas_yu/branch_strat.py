@@ -257,8 +257,13 @@ if __name__ == "__main__":
     for v in V:
         if v not in U: VnU.append(v)                                ## Already ordered, so find vertices in V\U
     
+    ## Step 3a: Generate Vi for each i where Vi := \overline{N}(xi)\{xj : j < i}
     for v in VnU:
         Vi = BB.gen_vi(VnU, v)
+        
+        ## Step 3b: Find the edges to the induced subgraph with vertices Vi
+        
+        ## Step 3b: Find the maximal independent set, Si, to the induced subgraph
     
     G_disp = GraphVisual(V,E)
     G_disp.disp_ind_subgraph(U,Et)
