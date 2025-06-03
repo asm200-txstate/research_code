@@ -363,29 +363,19 @@ if __name__ == "__main__":
         Ei = BB.gen_Ei(Vi)
         
         Si = BB.mis_set(Vi,Ei)
-        print("Si: ", Si)
-        print("\n")
-
-        G_disp.disp_ind_subgraph(Vi,Ei)
+        Si.append(VnU[i])
+        Si.sort()
+        
+        S_list.append(Si)
+        
+#        G_disp.disp_ind_subgraph(Vi,Ei)
         
         idx += 1
-  
-#    VnU = []
-#    for v in V:
-#        if v not in U: VnU.append(v)                                ## Already ordered, so find vertices in V\U
-#    print("VnU: ", VnU)
-#    
-#    G_disp.disp_ind_subgraph(U,Et)
+        
+    ## Determine which is the largest maximal independent subset
     
-#    count = 0
-#    ## Step 3a: Generate Vi for each i where Vi := \overline{N}(xi)\{xj : j < i}
-#    for v in VnU:
-#        Vi = BB.gen_vi(VnU, v)
-#        print(Vi)
-#
-#        ## Step 3b: Find the edges to the induced subgraph with vertices Vi
-#        
-#        ## Step 3b: Find the maximal independent set, Si, to the induced subgraph
-#    
-#    G_disp = GraphVisual(V,E)
-#    G_disp.disp_ind_subgraph(U,Et)
+    S_final = []
+    for Si in S_list:
+        if len(Si) > len(S_final): S_final = Si
+    
+    print("Final output: ", S_final)
