@@ -8,10 +8,10 @@
 import sys
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from random import random
 import gurobipy as gp
 from gurobipy import GRB
-from matplotlib.lines import Line2D
 
 # Step 1: Generate an arbitrary graph G = (V,E) and independent set S \subset V
 # Step 2: Find an independent set U \subset V such that \alpha(G(U)) \leq V
@@ -315,32 +315,35 @@ if __name__ == "__main__":
 #    ## Generating a random independent set, S, of vertices to G = (V,E)
 #    Rand_IS = RandIndSet(V,E)
 #    S = Rand_IS.gen_ind_set()
-    S = [1,2,3]
+    S = [1,3]
     
     ## Perform the Branch and Bound Strategy by Balas & Yu
     BB = BBStrat(V,E)
     
     ## Step 1: Find U \subseteq V where \alpha(G[U]) \leq |S|
-#    U = []
-#    valid = False                                                   ## Check if alpha(G[U]) <= |S|
-#    while not valid:
-#        ## Step 1a: Find a subset to V called U
-#        U = []                                                      ## Reset after each iteration
-#        for v in V:
-#            if random() < 0.5: U.append(v)                          ## Select some vertices
-#        
-#        ## Step 1b: Find the edges to the induced subgraph, G[U]
-#        Et = BB.gen_Ei(U)
-#        
-#        ## Step 1c: Find the maximal independent set to the induced subgraph of G[U] := (U, \tilde{E})
-#        a_Gu = BB.mis_cost(U, Et)
-#        
-#        ## Step 1d: Check if alpha(G[U]) <= |S|
-#        if a_Gu <= len(S): valid = True
-    U = [4,5,8,9]
+    U = []
+    valid = False                                                   ## Check if alpha(G[U]) <= |S|
+    while not valid:
+        ## Step 1a: Find a subset to V called U
+        U = []                                                      ## Reset after each iteration
+        for v in V:
+            if random() < 0.5: U.append(v)                          ## Select some vertices
+        
+        ## Step 1b: Find the edges to the induced subgraph, G[U]
+        Et = BB.gen_Ei(U)
+        
+        ## Step 1c: Find the maximal independent set to the induced subgraph of G[U] := (U, \tilde{E})
+        a_Gu = BB.mis_cost(U, Et)
+        
+        ## Step 1d: Check if alpha(G[U]) <= |S|
+        if a_Gu <= len(S): valid = True
+#    U = [4,5,8,9]
     Et = BB.gen_Ei(U)
     
     print("U: ", U)
+    
+    G_disp.disp_ind_subgraph(U, Et)
+    exit()
     
     ## Step 2: Order vertices of V\U as x_{1}, ..., x_{k}
     VnU, idx = [], 0
