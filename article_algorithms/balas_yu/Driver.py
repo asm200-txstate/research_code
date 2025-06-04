@@ -4,10 +4,6 @@ sys.dont_write_bytecode = True                                          ## Preve
 from GenGraph import GenGraph                                           ## Generate a graph G = (V,E)
 from GraphPlot import GraphPlot                                         ## Plot a graph G = (V,E)
 
-from matplotlib.lines import Line2D
-import matplotlib.pyplot as plt
-import networkx as nx
-
 def main(argc, argv):
     RandG = GenGraph(int(argv[1]))
     (V, E) = (RandG.gen_V(), RandG.gen_E())
