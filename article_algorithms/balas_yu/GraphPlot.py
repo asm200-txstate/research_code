@@ -1,6 +1,6 @@
-import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import networkx as nx
 
 class GraphPlot:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -14,7 +14,13 @@ class GraphPlot:
     #
     # Return(s): ...
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def __init__(self): pass
+    def __init__(self, V, E): 
+        self.V = V
+        self.E = E
+
+        G = nx.Graph()
+        G.add_nodes_from(self.V)
+        G.add_edges_from(self.E)
 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     # Method Name: disp_G
