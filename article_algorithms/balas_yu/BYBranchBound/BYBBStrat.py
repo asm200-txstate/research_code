@@ -1,3 +1,22 @@
+## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+## Filename: main.py   
+## 
+## Author: Axel Sanchez Moreno
+##
+## Description: Text goes here ...
+##
+##
+## Dependencies: 
+##
+## 
+##
+## 
+##
+##
+##
+##
+## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+
 import Graph.Graph as Graph
 from .GenIS import GenIS
 from .MISIP import MIS
@@ -10,7 +29,8 @@ class BYBBStrat:
         self.GIS = GenIS(self.Graph)
         self.S = self.GIS.gen_IS()
 
-        print("Generated independent set S: ", self.S)
+        print("Generate
+        d independent set S: ", self.S)
     
     def FindIS(self):
         U = []

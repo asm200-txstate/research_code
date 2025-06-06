@@ -1,3 +1,22 @@
+## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+## Filename: main.py   
+## 
+## Author: Axel Sanchez Moreno
+##
+## Description: Text goes here ...
+##
+##
+## Dependencies: 
+##
+## 
+##
+## 
+##
+##
+##
+##
+## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from Graph.Graph import Graph                                                   ## Create an instance of G

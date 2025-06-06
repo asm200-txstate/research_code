@@ -1,3 +1,22 @@
+## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+## Filename: main.py   
+## 
+## Author: Axel Sanchez Moreno
+##
+## Description: Text goes here ...
+##
+##
+## Dependencies: 
+##
+## 
+##
+## 
+##
+##
+##
+##
+## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+
 import sys
 sys.dont_write_bytecode = True                                                  ## Prevent __pycache__ from being generated
 
@@ -22,15 +41,13 @@ def main(argc, argv):
     DispG = GraphPlot(G)
     DispG.disp_G()
 
-
-
     # # Providing an independent set S \subseteq V to G
     # S = [1,3,5]
     
     # # Creating an aribtrary induced subgraph (Goal: Check if GenISGraph and GraphPlot.disp_ISG() works correctly)
     # Vt = [1,2,3,8,9]
-    # GenISG = GenISGraph(G, Vt)
-    # Et = GenISG.gen_Et()
+    # GenISG = GenISGraph(G, Vt)    # Provides the graph and set of vertices to generate the induced subgraph
+    # Et = GenISG.gen_Et()          # Provides an induced subgrpah (Update, return a graph, not a set of edges)
 
     # ISG = Graph(Vt, Et)
     # DispISG = GraphPlot(ISG)
