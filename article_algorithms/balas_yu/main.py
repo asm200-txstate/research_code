@@ -16,10 +16,13 @@ def main(argc, argv):
     G = Graph(V,E)
 
     BBStrat = BYBBStrat(G)
+    
     # BBStrat.FindMIS()               # Find the maximal independent set - apply recursion
 
     DispG = GraphPlot(G)
     DispG.disp_G()
+
+
 
     # # Providing an independent set S \subseteq V to G
     # S = [1,3,5]

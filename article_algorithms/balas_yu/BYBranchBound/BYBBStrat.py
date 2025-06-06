@@ -1,5 +1,6 @@
 import Graph.Graph as Graph
 from .GenIS import GenIS
+from .MISIP import MIS
 
 class BYBBStrat:
     def __init__(self, G : Graph):
@@ -11,5 +12,6 @@ class BYBBStrat:
 
         print("Generated independent set S: ", self.S)
     
-    def step1(self):
-        pass
+    def FindIS(self):
+        U = []
+        MIS_model = MIS(self.Graph)
