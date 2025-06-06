@@ -76,7 +76,7 @@ class GraphVisual:
 
         plt.title(r"Induced Subgraph Plot")
         plt.show()
-    
+
 class RandGraph:
     ## Name: __init__ (Driver)
     ## Description: Initializes the number of vertices and edges,
@@ -138,7 +138,7 @@ class RandIndSet:
                 if not invalid: S.append(v)
         
         return S                                                    ## Return the final result
-        
+
 class BBStrat:
     ## Name: __init__ (driver)
     ## Description: Initializes the graph G = (V,E)
@@ -382,3 +382,8 @@ if __name__ == "__main__":
         if len(Si) > len(S_final): S_final = Si
     
     print("Final output: ", S_final)
+
+# Task: In step 2, order the vertices in V\U
+#       via the degree of each vertex in ascending order
+#       (2 (deg(2) = 1), 4 (deg(4) = 2), and 1 (deg(1) = 4), for example) instead of 
+#       keeping the order by ascending order or number (1,2,3, and 4, for example).

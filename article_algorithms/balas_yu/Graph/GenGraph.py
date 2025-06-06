@@ -15,10 +15,8 @@ class GenGraph:
         if card_V <= -1:
             print("Invalid |V|, setting |V| = 10")
             card_V = 10
-        
-        print("Here in __init__() ...")
         self.card_V = card_V
-        
+    
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     # Method Name: gen_V
     #
@@ -31,11 +29,8 @@ class GenGraph:
     def gen_V(self):
         V = []
         for v in range(self.card_V): V.append(v+1)
-        
-        print("Here in gen_V() ...")
-        
         return V
-        
+    
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     # Method Name: gen_E
     #
@@ -47,12 +42,8 @@ class GenGraph:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def gen_E(self):
         E = []
-        
         for u in range(self.card_V):
             for v in range(self.card_V):
-                add_uv = 1 if random() < 0.50 else 0
-                if u < v and add_uv: E.append([u+1, v+1])
-        
-        print("Here in gen_E() ...")
-        
+                add_uv = 1 if random() < 0.50 else 0                        ## Choose if the edge [u,v] is included
+                if u < v and add_uv: E.append([u+1, v+1])                   ## If u < v and [u,v] is selected, append to E
         return E
