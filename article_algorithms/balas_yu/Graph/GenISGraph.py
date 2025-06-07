@@ -26,7 +26,7 @@ class GenISGraph:
     
     def gen_Et(self):
         Et = []
-        E = self.Graph.get_allE()
+        E = self.Graph.get_all_e()
 
         for u in self.U: 
             for v in self.U: 

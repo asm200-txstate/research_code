@@ -46,8 +46,8 @@ class GenIS:
     # 
     # Return(s): A generated independent set to the graph self.G 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def gen_IS(self):
-        S, V, E = [], self.Graph.get_allV(), self.Graph.get_allE()          ## S: The set of independent vertices to the graph G
+    def gen_indset(self):
+        S, V, E = [], self.Graph.get_all_v(), self.Graph.get_all_e()          ## S: The set of independent vertices to the graph G
         for v in V:
             invalid = False
             check_v = 1 if random() < 0.5 else 0                            ## Check: Is vertex v in V a candidate to add to S

@@ -30,16 +30,18 @@ def main(argc, argv):
     # RandG = GenGraph(int(argv[1]))
     # (V, E) = (RandG.gen_V(), RandG.gen_E())
 
+    # Future task: See if one can make objects for vertices and edges
     V = [v+1 for v in range(10)]
     E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]
     G = Graph(V,E)
 
     BBStrat = BYBBStrat(G)
-    
-    # BBStrat.FindMIS()               # Find the maximal independent set - apply recursion
+    BBStrat.find_mis()               # Find the maximal independent set - apply recursion
 
-    DispG = GraphPlot(G)
-    DispG.disp_G()
+    # DispG = GraphPlot(G)
+    # DispG.disp_graph() 
+
+    ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
 
     # # Providing an independent set S \subseteq V to G
     # S = [1,3,5]

@@ -46,7 +46,7 @@ class GraphPlot:
         self.GPlot.add_edges_from(E)
 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    # Method Name: disp_G
+    # Method Name: disp_graph
     #
     # Description: Displays the graph G via netowrkx. 
     #
@@ -54,7 +54,7 @@ class GraphPlot:
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def disp_G(self): 
+    def disp_graph(self): 
         pos = nx.circular_layout(self.GPlot, 2)
         nx.draw_networkx(self.GPlot, pos, width=2, node_size=800, font_size=12, font_color='white')
 
@@ -62,7 +62,7 @@ class GraphPlot:
         plt.show()
 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    # Method Name: disp_ISG
+    # Method Name: disp_isgraph
     #
     # Description:  Displays an induced subgraph of G, called G-tilde (or \tilde{G}) via netwrokx. 
     #               A caption is used to specify G-tilde.  
@@ -72,7 +72,7 @@ class GraphPlot:
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def disp_ISG(self, Gt : Graph): # Before: def disp_ISG(self, U, Et):
+    def disp_isgraph(self, Gt : Graph): # Before: def disp_ISG(self, U, Et):
         pos = nx.circular_layout(self.GPlot, 2)
 
         Vt = Gt.get_allV()

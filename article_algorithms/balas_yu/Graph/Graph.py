@@ -22,11 +22,11 @@ class Graph:
         self.V = V
         self.E = E
     
-    def disp_allV(self): print(self.V)
-    def disp_allE(self): print(self.E)
+    def disp_all_v(self): print(self.V)
+    def disp_all_e(self): print(self.E)
 
-    def get_allV(self): return self.V
-    def get_allE(self): return self.E
+    def get_all_v(self): return self.V
+    def get_all_e(self): return self.E
     
     def neighborhood(self, v): 
         return []
