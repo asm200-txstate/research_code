@@ -26,7 +26,8 @@ class MISIP:
         self.Graph = G
         self.model = gp.Model("mis_model")
         self.model.setParam("OutputFlag", 0)                            ## Prevent all comments from spamming terminal
-        
+        self.set_soln = []
+
     def optimize(self, S):
         V, E = self.Graph.get_all_v(), self.Graph.get_all_e()
 
@@ -39,11 +40,8 @@ class MISIP:
         ## Vertex Constraints
         for u in V: self.model.addConstr(x[u] >= 0, f"C2: {u}")
 
-        ## Cardinality constraint (\alpha(G[U]) <= |S|)
-        self.model.addConstr(quicksum(x[v] for v in V) <= len(S), "C3: |S|")
-
         cost = []
-        for v in V: cost.append(1)                                    ## Unweighted maximum independent set
+        for v in V: cost.append(1)                                      ## Unweighted maximum independent set
         
         c = {v : cost[i] for i, v in enumerate(V)}
 
@@ -54,23 +52,13 @@ class MISIP:
         ## Perform optimization
         self.model.optimize()
 
-        ## Find the solution here ...
-    
+        ## Find the solution
+        for soln, v in zip(x, self.model.getVars()):
+            if v.X == 1:
+                self.set_soln.append(soln)
+
     def opt_cost(self):
         return self.model.ObjVal
 
     def opt_soln(self):
-        pass
-    
-        # # Display optimal solution
-        # print("Optimal Solution: ")
-        # for v in self.model.getVars():
-        #     print(f"{v.VarName}, {v.X:.0f}")
-        
-        # Si = []
-        # for soln, v in zip(x, self.model.getVars()):
-        #     if v.X == 1:
-        #         Si.append(soln)
-        #         print(f"soln: {soln}")
-        
-        # # return Si
+        return self.set_soln 

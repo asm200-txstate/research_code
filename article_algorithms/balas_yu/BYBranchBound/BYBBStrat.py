@@ -38,7 +38,5 @@ class BYBBStrat:
         MIS_model.optimize(S)
         
         # To be implemented later ...
-        print(f"Optimal Solution: {MIS_model.opt_cost()}")
-        MIS_model.opt_soln()
-        
-        # print(f"Optimal Set: {MIS_model.opt_soln()}")
+        print("Optimal Cost:", MIS_model.opt_cost())
+        print("Optimal Soln:", MIS_model.opt_soln())
