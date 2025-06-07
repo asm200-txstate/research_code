@@ -92,3 +92,6 @@ class GraphPlot:
 
         plt.title(r"Induced Subgraph (ISG) Plot on G = (V, E)")
         plt.show()
+    
+    # Task: Add a disp_ind_isgraph() method ...
+    # Goal: Help see what's considered the candidate vertex, xi, in not_N(xi)

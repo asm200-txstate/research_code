@@ -37,65 +37,77 @@ class BYBBStrat:
         S, U = self.GIS.gen_indset(Graph), []                                           # Generate an arbitrary independent set, S \subseteq V
         V = self.Graph.get_all_v()
 
-        print(f">>> Current set V: {V}")
-        print(f">>> Independent set S: {S}")
-        print(f">>> Size (|S|): {float(len(S))}")
-        print("")
+        # print(f">>> Current set V: {V}")
+        # print(f">>> Independent set S: {S}")
+        print(f">>> Size (|S|): {float(len(S))}\n")
 
-        valid = False                                                                   # Find a subset U \subseteq V such that \alpha(G[U]) <= |S|
+        valid = False                                                                   # Step 1: Find a subset U \subseteq V such that \alpha(G[U]) <= |S|
         while not valid:
-            U = [v for v in self.Graph.get_all_v() if random() < 0.50]
+            U = [v for v in self.Graph.get_all_v() if random() < 0.50]      
             ISGraph = self.GenISG.gen_isgraph(Graph, U)
 
             MIS_model = MISIP(ISGraph)    
             MIS_model.optimize()
             cost = MIS_model.opt_cost()
 
-            print("")
-            print(">>> Candidate set U:", U)
-            print(">>> Cost (a(G[U])):", cost)
+            print("\n>>> Cost (a(G[U])):", cost)
+            if MIS_model.opt_cost() <= len(S): valid = True
 
-            if MIS_model.opt_cost() <= len(S): 
-                print(">>> a(G[U]) <= |S|")
-                print("")
-                valid = True
-            else: 
-                print(">>> a(G[U]) > |S| ...")
+            if valid: print(">>> a(G[U]) <= |S|\n")
+            else: print(">>> a(G[U]) > |S| ...")
 
-            time.sleep(2.5)                                                             # Pause terminal every 2.5 second, meant for debugging code / reading terminal. 
+            time.sleep(1.5)                                                             # Pause terminal every 1.5 second, meant for debugging code / reading terminal. 
 
-        # Arrange vertices in V\U by the degree in G
-        VnU = {}
-
-        for v in V: 
-            if v not in U: 
-                deg = Graph.degree(v)
-                VnU[v] = deg
+        VnU = {v : Graph.degree(v) for v in V if v not in U}
         
-        x = dict(sorted(VnU.items(), key = lambda item : item[1]))                      # Sort vertices in V\U by the degree at each vertex (ascending order)
+        X_list = list(dict(sorted(VnU.items(), key = lambda item : item[1])).keys())
 
-        print(">>> V\\U:", list(VnU.keys()))
-        print(">>> x key:", list(x.keys()))
-        print(">>> x deg:", list(x.values()))
-        print("")
+        # print(f">>> V\\U keys: {list(VnU.keys())}")
+        # print(f">>> V\\U vals: {list(VnU.values())}\n")
+        print(f">>> X values: {X_list}\n")
 
-        for v in VnU: print(f"not_N({v}): {Graph.non_neighborhood(v)}")
+        for v in VnU: print(f"not_N({v}): {Graph.non_neighborhood(v)}\n")
 
-        # Display the induced subgraph, ISGraph, within the full graph, G (after ~ 15 seconds)
-        GPlot = GraphPlot(self.Graph)
-        for v in VnU:
-            ISG = self.GenISG.gen_isgraph(Graph, Graph.non_neighborhood(v))
-            GPlot.disp_isgraph(ISG)
+        for i in range(len(VnU)): 
+            root = X_list[i]
+
+            Xi_tilde, not_N = [], Graph.non_neighborhood(root)
+            for j in range(i): Xi_tilde.append(X_list[j])
+
+            Vi = not_N.copy()
+            for v in Xi_tilde: 
+                if v in not_N: Vi.remove(v)
+
+            print(f"Current V: {V}")
+            print(f"Current not_N({root}): {not_N}")
+            print(f"Current X{i}_tilde: {Xi_tilde}")
+            print(f"Current V{i}: {Vi}")
+
+            for v in V:
+                cond1, cond2 = v not in Vi, v is not root
+                if cond1 and cond2: X.append(v)
+            I.append(root)
+
+            # Apply backtracking to X and I
+            print(f"Current I: {I}")
+            print(f"Current X: {X}\n")
+
+            # Make an induces subgraph on Vi
+            Graph_t = self.GenISG.gen_isgraph(Graph, Vi)
+
+            # Graph_t.disp_all_v()
+            # Graph_t.disp_all_e()
+            # print("")
+
+            # Call recursive case on ISG of G, I, X
+            # self.find_mis_helper(Graph_t, I, X)
+
+            for v in V:
+                cond1, cond2 = v not in Vi, v is not root
+                if cond1 and cond2: X.remove(v)
+            I.remove(root)
+
+            time.sleep(1.5)                                                             # Pause terminal every 1.5 second, meant for debugging code / reading terminal. 
 
     def find_mis(self):
         self.find_mis_helper(self.Graph, [], [])
-
-        # S, U = self.GIS.gen_indset(self.Graph), []
-        # print("Generated independent set S:", S)
-
-        # MIS_model = MISIP(self.Graph)
-        # MIS_model.optimize(S)
-        
-        # # To be implemented later ...
-        # print("Optimal Cost:", MIS_model.opt_cost())
-        # print("Optimal Soln:", MIS_model.opt_soln())
