@@ -24,6 +24,8 @@ from Graph.GenISG import GenISGraph
 from random import random
 import time
 
+from Graph.GraphPlot import GraphPlot
+
 class BYBBStrat:
     def __init__(self, G : Graph):
         self.Graph = G
@@ -37,7 +39,8 @@ class BYBBStrat:
 
         print(f">>> Current set V: {V}")
         print(f">>> Independent set S: {S}")
-        print(f">>> Size (|S|): {float(len(S))}\n")
+        print(f">>> Size (|S|): {float(len(S))}")
+        print("")
 
         valid = False                                                                   # Find a subset U \subseteq V such that \alpha(G[U]) <= |S|
         while not valid:
@@ -46,25 +49,43 @@ class BYBBStrat:
 
             MIS_model = MISIP(ISGraph)    
             MIS_model.optimize()
+            cost = MIS_model.opt_cost()
 
-            print("\n>>> Candidate set U:", U)
-            print(">>> Cost (a(G[U])):", MIS_model.opt_cost())
+            print("")
+            print(">>> Candidate set U:", U)
+            print(">>> Cost (a(G[U])):", cost)
 
             if MIS_model.opt_cost() <= len(S): 
                 print(">>> a(G[U]) <= |S|")
+                print("")
                 valid = True
-            else: print(">>> a(G[U]) > |S| ...")
+            else: 
+                print(">>> a(G[U]) > |S| ...")
 
             time.sleep(2.5)                                                             # Pause terminal every 2.5 second, meant for debugging code / reading terminal. 
 
         # Arrange vertices in V\U by the degree in G
         VnU = {}
+
         for v in V: 
             if v not in U: 
-                pass
-                # VnU.append(v)
+                deg = Graph.degree(v)
+                VnU[v] = deg
         
-        print("\n>>> V\\U:", VnU)
+        x = dict(sorted(VnU.items(), key = lambda item : item[1]))                      # Sort vertices in V\U by the degree at each vertex (ascending order)
+
+        print(">>> V\\U:", list(VnU.keys()))
+        print(">>> x key:", list(x.keys()))
+        print(">>> x deg:", list(x.values()))
+        print("")
+
+        for v in VnU: print(f"not_N({v}): {Graph.non_neighborhood(v)}")
+
+        # Display the induced subgraph, ISGraph, within the full graph, G (after ~ 15 seconds)
+        GPlot = GraphPlot(self.Graph)
+        for v in VnU:
+            ISG = self.GenISG.gen_isgraph(Graph, Graph.non_neighborhood(v))
+            GPlot.disp_isgraph(ISG)
 
     def find_mis(self):
         self.find_mis_helper(self.Graph, [], [])

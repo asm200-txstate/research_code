@@ -22,7 +22,7 @@ from Graph.Graph import Graph                                                   
 class GenISGraph:
     def __init__(self): pass
 
-    def gen_isgraph(self, G, Vt):
+    def gen_isgraph(self, G : Graph, Vt : list):
         Vt, V = sorted(Vt), G.get_all_v()
         Et, E = [], G.get_all_e()
 
