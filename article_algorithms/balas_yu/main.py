@@ -22,7 +22,7 @@ sys.dont_write_bytecode = True                                                  
 
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
-from Graph.GenISGraph import GenISGraph                                         ## Create an instance of Gtilde (induced subgraph of G)
+from Graph.GenISG import GenISGraph                                         ## Create an instance of Gtilde (induced subgraph of G)
 from Graph.Graph import Graph                                                   ## Create an instance of G
 from BYBranchBound.BYBBStrat import BYBBStrat                                   ## Access the class to perform the branc and bound algorithm
 

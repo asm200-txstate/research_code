@@ -20,16 +20,15 @@
 from Graph.Graph import Graph                                                   ## Create an instance of G
 
 class GenISGraph:
-    def __init__(self, G, U):
-        self.Graph = G
-        self.U = sorted(U)
-    
-    def gen_Et(self):
-        Et = []
-        E = self.Graph.get_all_e()
+    def __init__(self): pass
 
-        for u in self.U: 
-            for v in self.U: 
+    def gen_isgraph(self, G, Vt):
+        Vt, V = sorted(Vt), G.get_all_v()
+        Et, E = [], G.get_all_e()
+
+        for u in Vt: 
+            for v in Vt: 
                 if u < v and [u, v] in E: Et.append([u, v])                     
         
-        return Et
+        Gt = Graph(Vt, Et)
+        return Gt

@@ -40,7 +40,7 @@ class GraphPlot:
         self.GPlot = nx.Graph()
         self.Graph = G
 
-        V, E = self.Graph.get_allV(), self.Graph.get_allE()
+        V, E = self.Graph.get_all_v(), self.Graph.get_all_e()
 
         self.GPlot.add_nodes_from(V)
         self.GPlot.add_edges_from(E)
@@ -58,7 +58,7 @@ class GraphPlot:
         pos = nx.circular_layout(self.GPlot, 2)
         nx.draw_networkx(self.GPlot, pos, width=2, node_size=800, font_size=12, font_color='white')
 
-        plt.title(f"Induced Subgraph for $K_{{{len(self.Graph.get_allV())}}}$")
+        plt.title(f"Induced Subgraph for $K_{{{len(self.Graph.get_all_v())}}}$")
         plt.show()
 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -75,15 +75,15 @@ class GraphPlot:
     def disp_isgraph(self, Gt : Graph): # Before: def disp_ISG(self, U, Et):
         pos = nx.circular_layout(self.GPlot, 2)
 
-        Vt = Gt.get_allV()
-        Et = Gt.get_allE()
+        Vt = Gt.get_all_v()
+        Et = Gt.get_all_e()
         # print("Gt vertices:", Gt.get_allV())
         # print("Gt vertices:", Gt.get_allE())
 
         args = {"node_size" : 800}
         nx.draw_networkx(self.GPlot, pos, width=3, font_size=18, font_color="white", **args)
         nx.draw_networkx_nodes(self.GPlot, pos, nodelist=Vt, node_color="tab:red", **args)
-        nx.draw_networkx_edges(self.GPlot, pos, width=3, edgelist=Gt.get_allE(), edge_color="tab:red", **args)
+        nx.draw_networkx_edges(self.GPlot, pos, width=3, edgelist=Gt.get_all_e(), edge_color="tab:red", **args)
 
         legend_label = [
             Line2D([0], [0], marker='o', label=r'ISG: $\tilde{G} = (\tilde{V}, \tilde{E})$', markerfacecolor='tab:red', color='tab:red')
