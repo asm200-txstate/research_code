@@ -27,7 +27,7 @@ class MISIP:
         self.model = gp.Model("mis_model")
         self.model.setParam("OutputFlag", 0)                            ## Prevent all comments from spamming terminal
         self.set_soln = []
-
+        
     def optimize(self):
         V, E = self.Graph.get_all_v(), self.Graph.get_all_e()
 

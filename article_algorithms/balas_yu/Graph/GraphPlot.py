@@ -22,6 +22,8 @@ from matplotlib.lines import Line2D
 from Graph.Graph import Graph                                                   ## Create an instance of G
 import networkx as nx
 
+import time
+
 class GraphPlot:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     # Method Name: __init__ (Driver)
@@ -91,7 +93,9 @@ class GraphPlot:
         plt.legend(handles=legend_label, loc='upper right')
 
         plt.title(r"Induced Subgraph (ISG) Plot on G = (V, E)")
-        plt.show()
+        plt.show(block=False)
+        # plt.pause(2)
+        # plt.close('all')
     
     # Task: Add a disp_ind_isgraph() method ...
     # Goal: Help see what's considered the candidate vertex, xi, in not_N(xi)
