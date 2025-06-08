@@ -60,4 +60,4 @@ class MISIP:
         return self.model.ObjVal
 
     def opt_soln(self):
-        return self.set_soln 
+        return self.set_soln

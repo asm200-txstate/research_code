@@ -77,13 +77,13 @@ class GraphPlot:
 
         Vt = Gt.get_all_v()
         Et = Gt.get_all_e()
-        # print("Gt vertices:", Gt.get_allV())
-        # print("Gt vertices:", Gt.get_allE())
+        # print("Gt vertices:", Gt.get_all_v())
+        # print("Gt edges:", Gt.get_all_e())
 
         args = {"node_size" : 800}
         nx.draw_networkx(self.GPlot, pos, width=3, font_size=18, font_color="white", **args)
         nx.draw_networkx_nodes(self.GPlot, pos, nodelist=Vt, node_color="tab:red", **args)
-        nx.draw_networkx_edges(self.GPlot, pos, width=3, edgelist=Gt.get_all_e(), edge_color="tab:red", **args)
+        nx.draw_networkx_edges(self.GPlot, pos, width=3, edgelist=Et, edge_color="tab:red", **args)
 
         legend_label = [
             Line2D([0], [0], marker='o', label=r'ISG: $\tilde{G} = (\tilde{V}, \tilde{E})$', markerfacecolor='tab:red', color='tab:red')
