@@ -107,11 +107,6 @@ class BYBBStrat:
 
             print("*" * 75, "\n")
 
-            # dir_path = "balas_yu/OutputDir/output.txt"
-            # with open(dir_path, "w", buffering=1) as file:
-            #     file.write("Demo check ...\n")
-            #     file.flush()
-
             # Make an induces subgraph on Vi
             Graph_t = self.GenISG.gen_isgraph(Graph, Vi)
 
