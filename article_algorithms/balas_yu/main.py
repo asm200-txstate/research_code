@@ -22,9 +22,9 @@ sys.dont_write_bytecode = True                                                  
 
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
-from Graph.GenISG import GenISGraph                                         ## Create an instance of Gtilde (induced subgraph of G)
+from Graph.GenISG import GenISGraph                                             ## Create an instance of Gtilde (induced subgraph of G)
 from Graph.Graph import Graph                                                   ## Create an instance of G
-from BYBranchBound.BYBBStrat import BYBBStrat                                   ## Access the class to perform the branc and bound algorithm
+from BalasYu.BranchScheme import BYBBStrat                                      ## Access the class to perform the branc and bound algorithm
 
 def main(argc, argv):
     # RandG = GenGraph(int(argv[1]))
@@ -36,26 +36,10 @@ def main(argc, argv):
     G = Graph(V,E)
 
     BBStrat = BYBBStrat(G)
-    BBStrat.find_mis()               # Find the maximal independent set - apply recursion
+    BBStrat.branch_scheme()               # Find the maximal independent set - apply recursion
 
     # DispG = GraphPlot(G)
     # DispG.disp_graph() 
-
-    ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### ##### #####
-
-    # # Providing an independent set S \subseteq V to G
-    # S = [1,3,5]
-    
-    # # Creating an aribtrary induced subgraph (Goal: Check if GenISGraph and GraphPlot.disp_ISG() works correctly)
-    # Vt = [1,2,3,8,9]
-    # GenISG = GenISGraph(G, Vt)    # Provides the graph and set of vertices to generate the induced subgraph
-    # Et = GenISG.gen_Et()          # Provides an induced subgrpah (Update, return a graph, not a set of edges)
-
-    # ISG = Graph(Vt, Et)
-    # DispISG = GraphPlot(ISG)
-
-    # DispISG.disp_G()
-    # DispG.disp_ISG(ISG)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2: 
