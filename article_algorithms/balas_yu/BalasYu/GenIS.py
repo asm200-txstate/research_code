@@ -18,7 +18,6 @@
 ## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
 
 from random import random
-import Graph.Graph as Graph
 
 class GenIS:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -46,7 +45,7 @@ class GenIS:
     # Return(s): A generated independent set to the graph self.G 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def gen_indset(self, Graph):
-        S, V, E = [], Graph.get_all_v(), Graph.get_all_e()        ## S: The set of independent vertices to the graph G
+        S, V, E = [], list(Graph.nodes()), list(Graph.edges())              ## S: The set of independent vertices to the graph G
         for v in V:
             invalid = False
             check_v = 1 if random() < 0.5 else 0                            ## Check: Is vertex v in V a candidate to add to S

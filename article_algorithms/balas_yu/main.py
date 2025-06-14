@@ -22,9 +22,10 @@ sys.dont_write_bytecode = True                                                  
 
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
-from Graph.GenISG import GenISGraph                                             ## Create an instance of Gtilde (induced subgraph of G)
-from Graph.Graph import Graph                                                   ## Create an instance of G
 from BalasYu.BranchScheme import BYBBStrat                                      ## Access the class to perform the branc and bound algorithm
+from BalasYu.RecSimpFix import GenUS
+
+import networkx as nx
 
 def main(argc, argv):
     # RandG = GenGraph(int(argv[1]))
@@ -33,13 +34,22 @@ def main(argc, argv):
     # Future task: See if one can make objects for vertices and edges
     V = [v+1 for v in range(10)]
     E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]
-    G = Graph(V,E)
 
-    BBStrat = BYBBStrat(G)
-    BBStrat.branch_scheme()               # Find the maximal independent set - apply recursion
+    G = nx.Graph()
+    G.add_nodes_from(V)     # Defining the vertices to the graph 
+    G.add_edges_from(E)     # Defining the edges to the graph
 
-    # DispG = GraphPlot(G)
-    # DispG.disp_graph() 
+    BBStrat = BYBBStrat()
+    BBStrat.branch_scheme(G)               # Find the maximal independent set - apply recursion
+
+    G_p = nx.induced_subgraph(G, [1,2,3,8,9])
+
+    DispG = GraphPlot()
+    DispG.disp_graph(G) 
+    DispG.disp_isgraph(G, G_p) 
+
+    # RCF = GenUS(G)
+    # RCF.GenUS()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2: 

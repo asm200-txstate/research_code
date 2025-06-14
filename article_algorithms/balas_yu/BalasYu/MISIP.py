@@ -17,22 +17,23 @@
 ##
 ## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
 
-import Graph.Graph as Graph
 import gurobipy as gp
 from gurobipy import GRB, quicksum
 
+import networkx as nx
+
 class MISIP:
-    def __init__(self, G : Graph):
+    def __init__(self, G : nx):
         self.Graph = G
         self.model = gp.Model("mis_model")
         self.model.setParam("OutputFlag", 0)                            ## Prevent all comments from spamming terminal
         self.set_soln = []
         
     def optimize(self):
-        V, E = self.Graph.get_all_v(), self.Graph.get_all_e()
+        V, E = list(self.Graph.nodes()), list(self.Graph.edges())
 
         ## Define decision variables
-        x = self.model.addVars(V, lb=0.0, ub=1.0, vtype=GRB.CONTINUOUS, name="DV: x") # Use GRB.BINARY, if needed
+        x = self.model.addVars(V, lb=0.0, ub=1.0, vtype=GRB.CONTINUOUS, name="DV: x")
 
         ## Define edge constratins
         for [u, v] in E: self.model.addConstr(x[u] + x[v] <= 1, f"C1: ({u},{v})")

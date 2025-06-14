@@ -19,10 +19,7 @@
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from Graph.Graph import Graph                                                   ## Create an instance of G
 import networkx as nx
-
-import time
 
 class GraphPlot:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -38,14 +35,16 @@ class GraphPlot:
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def __init__(self, G : Graph): 
-        self.GPlot = nx.Graph()
-        self.Graph = G
+    def __init__(self): 
+        pass
 
-        V, E = self.Graph.get_all_v(), self.Graph.get_all_e()
+        # self.GPlot = nx.Graph()
+        # self.Graph = G
 
-        self.GPlot.add_nodes_from(V)
-        self.GPlot.add_edges_from(E)
+        # V, E = self.Graph.get_all_v(), self.Graph.get_all_e()
+
+        # self.GPlot.add_nodes_from(V)
+        # self.GPlot.add_edges_from(E)
 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     # Method Name: disp_graph
@@ -56,11 +55,11 @@ class GraphPlot:
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def disp_graph(self): 
-        pos = nx.circular_layout(self.GPlot, 2)
-        nx.draw_networkx(self.GPlot, pos, width=2, node_size=800, font_size=12, font_color='white')
+    def disp_graph(self, G : nx): 
+        pos = nx.circular_layout(G, 2)
+        nx.draw_networkx(G, pos, width=2, node_size=800, font_size=12, font_color='white')
 
-        plt.title(f"Induced Subgraph for $K_{{{len(self.Graph.get_all_v())}}}$")
+        plt.title(f"Induced Subgraph for $K_{{{len(G.nodes())}}}$")
         plt.show()
 
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -74,18 +73,16 @@ class GraphPlot:
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def disp_isgraph(self, Gt : Graph): # Before: def disp_ISG(self, U, Et):
-        pos = nx.circular_layout(self.GPlot, 2)
+    def disp_isgraph(self, G, Gt): # Before: def disp_ISG(self, U, Et):
+        pos = nx.circular_layout(G, 2)
 
-        Vt = Gt.get_all_v()
-        Et = Gt.get_all_e()
-        # print("Gt vertices:", Gt.get_all_v())
-        # print("Gt edges:", Gt.get_all_e())
+        Vt = Gt.nodes()
+        Et = Gt.edges()
 
         args = {"node_size" : 800}
-        nx.draw_networkx(self.GPlot, pos, width=3, font_size=18, font_color="white", **args)
-        nx.draw_networkx_nodes(self.GPlot, pos, nodelist=Vt, node_color="tab:red", **args)
-        nx.draw_networkx_edges(self.GPlot, pos, width=3, edgelist=Et, edge_color="tab:red", **args)
+        nx.draw_networkx(G, pos, width=3, font_size=18, font_color="white", **args)
+        nx.draw_networkx_nodes(G, pos, nodelist=Vt, node_color="tab:red", **args)
+        nx.draw_networkx_edges(G, pos, width=3, edgelist=Et, edge_color="tab:red", **args)
 
         legend_label = [
             Line2D([0], [0], marker='o', label=r'ISG: $\tilde{G} = (\tilde{V}, \tilde{E})$', markerfacecolor='tab:red', color='tab:red')
@@ -93,9 +90,8 @@ class GraphPlot:
         plt.legend(handles=legend_label, loc='upper right')
 
         plt.title(r"Induced Subgraph (ISG) Plot on G = (V, E)")
-        plt.show(block=False)
-        # plt.pause(2)
-        # plt.close('all')
+        plt.show()
+        return
     
     # Task: Add a disp_ind_isgraph() method ...
     # Goal: Help see what's considered the candidate vertex, xi, in not_N(xi)

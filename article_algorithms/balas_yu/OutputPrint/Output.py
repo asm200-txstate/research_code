@@ -6,7 +6,13 @@ class OutputPrint:
     
     def print_top_line_break(self): print("\n" + "*" * 75 + "\n")
 
-    def print_rec_level(self, level : int):
+    def print_final_lvl(self, lvl : int, S : list, I : list):
+        print(f">>> {f'Final Solution (level = {lvl}): ':<{self.label_width}} {S + I}")
+        print(f">>> {f'Independent set S: ':<{self.label_width}} {S}")
+        print(f">>> {f'Independent set I: ':<{self.label_width}} {I}")
+        print("\n" + "*" * 75 + "\n")
+
+    def print_rec_lvl(self, level : int):
         print(f">>> {f'Current Recursion Level:':<{self.label_width}} Level {level}\n")
 
     def print_p1(self, V : list, S : list, U : list):
