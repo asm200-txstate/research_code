@@ -34,22 +34,22 @@ def main(argc, argv):
     # Future task: See if one can make objects for vertices and edges
     V = [v+1 for v in range(10)]
     E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]
-
+    
     G = nx.Graph()
     G.add_nodes_from(V)     # Defining the vertices to the graph 
     G.add_edges_from(E)     # Defining the edges to the graph
 
-    BBStrat = BYBBStrat()
-    BBStrat.branch_scheme(G)               # Find the maximal independent set - apply recursion
+    # BBStrat = BYBBStrat()
+    # BBStrat.branch_scheme(G)               # Find the maximal independent set - apply recursion
 
-    G_p = nx.induced_subgraph(G, [1,2,3,8,9])
+    # G_p = nx.induced_subgraph(G, [1,2,3,8,9])   # Sample induced subgraph
 
-    DispG = GraphPlot()
-    DispG.disp_graph(G) 
-    DispG.disp_isgraph(G, G_p) 
+    # DispG = GraphPlot()
+    # DispG.disp_graph(G) 
+    # DispG.disp_isgraph(G, G_p) 
 
-    # RCF = GenUS(G)
-    # RCF.GenUS()
+    RCF = GenUS()
+    RCF.GenUS(G)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2: 

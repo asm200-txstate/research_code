@@ -3,10 +3,11 @@ from random import choice
 import itertools
 
 from .MISIP import MISIP
+from Graph.GraphPlot import GraphPlot
 
 class GenUS:
-    def __init__(self, G):
-        self.G = G
+    def __init__(self): 
+        self.length = 26
 
     def indepSimplicial(self, G, S): # Update with algorithm 2 in lecture notes
         I, V_p = [], list(G.nodes())
@@ -76,29 +77,53 @@ class GenUS:
         
         return F0, F1
 
-    def GenUS(self):
-        V, E = self.G.get_all_v(), self.G.get_all_e()
+    def GenUS(self, G : nx):
+        V, E = G.nodes(), G.edges()
 
         G = nx.Graph()
         G.add_nodes_from(V)
         G.add_edges_from(E)
-        
-        F0, F1 = self.recursive_simplicial_fixing(G)
-        
-        print("Success!")
-        print(f"Excess:      {F0}")
-        print(f"Independent: {F1}")
-        
-        G_c = nx.complement(G)
-        
-        ISG_c = nx.induced_subgraph(G_c, F1)
-        status = nx.is_chordal(ISG_c)
-        print(f"ISG_c Chordal Status: {status}")
 
-        GenISG = GenISGraph()
-        GT = GenISG.gen_isgraph(self.G, F1)
+        # Iteratively repeat algorithm until condition is satisfied
+            
+        chordal_count = 0
+        while True:
+            T0, T1 = self.recursive_simplicial_fixing(G)
+            print(f">>> {'Remaining vertex set: ':<{self.length}} {T0}")
+            print(f">>> {'Maximal independent set: ':<{self.length}} {T1}")
 
-        mis_model = MISIP(GT)
+            Gc = nx.complement(G)
+            ISGc = nx.induced_subgraph(Gc, T0)
+            
+            status = nx.is_chordal(ISGc)
+            message = 'Is Chordal' if status else 'Is Not Chordal'
+            
+            print(f">>> {'Original ISGc status: ':<{self.length}} {message}\n")
+
+            Tp = T0.copy()
+            for t in T1:
+                Tp.append(t)
+                IGc = nx.induced_subgraph(Gc, Tp)
+
+                status = nx.is_chordal(IGc)
+                message = 'Is Chordal' if status else 'Is Not Chordal'
+                
+                # print(f">>> {f'ISGc status after adding {t}':<{27}} ... {message}")
+                Tp.remove(t)
+
+                if status: chordal_count += 1                                                   # Counting the cases appending t in T1\T0 to \overline{G}[T0] to remain chordal
+
+            if chordal_count != 0: 
+                print(">>> Try again ....\n")
+                chordal_count = 0                                                               # Reset count and repeat process
+            else: 
+                print(">>> Final set found!\n")
+                break
+
+        Gp = nx.induced_subgraph(G, T0)
+        print(f">>> {'Final set T0: ':<{25}}  {T0}\n")
+
+        mis_model = MISIP(Gp)
         mis_model.optimize()
         S = mis_model.opt_soln()
 
