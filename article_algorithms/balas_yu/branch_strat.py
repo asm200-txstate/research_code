@@ -85,7 +85,7 @@ class RandGraph:
     ## * card_v: The number of vertices to G = (V,E)
     ## * card_e: The number of edges to G = (V,E)
     ## Return(s): None
-    def __init__(self, card_v): self.card_v = card_v
+    def __init__(self, card_v): self.card_v = card_v  
 
     ## Name: generate_V
     ## Description: Generates the set of vertices, V, to the graph G = (V,E).
