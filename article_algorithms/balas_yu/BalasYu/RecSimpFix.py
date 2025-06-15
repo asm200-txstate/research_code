@@ -128,3 +128,11 @@ class GenUS:
         S = mis_model.opt_soln()
 
         print(f"Maximum independent set S: {S}")
+
+        clique_list = list(nx.find_cliques(Gp))
+        print(clique_list)
+
+        # Need to find the disjoint cliques where K_1 \cup ... \cup K_{|S|} = T0
+
+        GPlot = GraphPlot()
+        GPlot.disp_graph(Gp)
