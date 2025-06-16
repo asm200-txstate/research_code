@@ -4,6 +4,7 @@ import itertools
 
 from .MISIP import MISIP
 from Graph.GraphPlot import GraphPlot
+from .CCIP import CCIP
 
 class GenUS:
     def __init__(self): 
@@ -111,11 +112,11 @@ class GenUS:
                 # print(f">>> {f'ISGc status after adding {t}':<{27}} ... {message}")
                 Tp.remove(t)
 
-                if status: chordal_count += 1                                                   # Counting the cases appending t in T1\T0 to \overline{G}[T0] to remain chordal
+                if status: chordal_count += 1                                                  # Counting the cases appending t in T1\T0 to \overline{G}[T0] to remain chordal
 
             if chordal_count != 0: 
                 print(">>> Try again ....\n")
-                chordal_count = 0                                                               # Reset count and repeat process
+                chordal_count = 0                                                              # Reset count and repeat process
             else: 
                 print(">>> Final set found!\n")
                 break
@@ -132,50 +133,37 @@ class GenUS:
         clique_list = list(nx.find_cliques(Gp))
         print(f">>> {'Full Clique List: ':<{26}} {clique_list}")
 
-        # print(">>> Comination List: \n")
-        final_clist = None
+        MCC_model = CCIP(Gp, clique_list)
+        MCC_model.optimize()
+        CC = MCC_model.opt_soln()
 
-        for c_list in itertools.combinations(clique_list, len(S)):
-            # print(f">>> Current Combination: {c_list}")
-            cand_list = list(set([item for sublist in c_list for item in sublist]))               # Collect the vertices to the clique combination
+        print(f">>> {'Full Clique Cover: ':<{26}} {CC}\n")
 
-            if list(Gp.nodes) == cand_list:                                                       # Check if the combination equals the nodes to the induced subgraph G'
-                final_clist = list(c_list)
-                break
-
-        print(f">>> {'Clique Cover List: ':<{26}} {final_clist}\n")
-
-        for t in VnT:
-            print(f"Current node: {t}")
-            print(f"{f'Neighborhood at {t}: ':<{20}} {list(nx.neighbors(G, t))}\n")
-
-        for clique in final_clist:
-            print(f"Clique: {clique}")
-
-        print("")
-
-        clique_dict = {}
-        for key in final_clist:
+        clique_dict = {}                                                                       
+        for key in CC:
             clique_dict[tuple(key)] = list(key)
 
+        # Sequentially adding vertices v \in V\T to cliques containing vertices in N(v), giving cliques \hat{K_{1}}, ..., \hat{K_{|S|}}
         for t in T:
-            for clique in final_clist:
+            for clique in CC:
                 Nt = list(nx.neighbors(G, t))
                 if set(clique).issubset(Nt):
                     clique_dict[tuple(clique)].append(t)
-
+        
         for key, val in clique_dict.items():
             print(f"{f'Before: {list(key)}':<{14}} -> {f'After: {val}':<{10}}")
 
-        Eu = []
+        U = []
         for key, E in clique_dict.items(): 
-            for v in E: Eu.append(v)
+            for v in E: U.append(v)
 
-        print(f"\nEu: {Eu}")
-        Gu = nx.induced_subgraph(G, Eu)
-
-        # GPlot = GraphPlot()
-        # GPlot.disp_graph(Gu)
+        print(f"\n{'>>> Vertex set U: ':<{29}} {U}")                                                                    # Viewing the vertex set U where U is the union of \hat{K_{1}}, ..., \hat{K_{|S|}}
+        Gu = nx.induced_subgraph(G, U)
+        
+        MIS_model = MISIP(Gu)
+        MIS_model.optimize()
+        if MIS_model.opt_cost() <= len(S): print(f">>> {'Final Result:':<{25}} Valid, a(G[U]) <= |S|")
+        else: print(f">>> {'Final Result:':<{25}} Invalid, a(G[U]) > |S|")
 
         return
     
