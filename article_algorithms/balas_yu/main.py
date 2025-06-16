@@ -49,7 +49,7 @@ def main(argc, argv):
     # DispG.disp_isgraph(G, G_p) 
 
     RCF = GenUS()
-    RCF.GenUS(G)
+    RCF.chordal_method(G)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2: 

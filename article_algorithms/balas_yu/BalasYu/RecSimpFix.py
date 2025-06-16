@@ -43,7 +43,7 @@ class GenUS:
                 simplicial_count += 1
             
     #    print(f"Final simplicial vertex count: {simplicial_count}")
-        
+    
         return [v for v in G.nodes() if simplicial_dict[v] == True] # returns the set of vertices of G
 
     def recursive_simplicial_fixing(self, G):
@@ -76,8 +76,8 @@ class GenUS:
             if D == []: break
         
         return F0, F1
-
-    def GenUS(self, G : nx):
+    
+    def chordal_method(self, G : nx):
         V, E = G.nodes(), G.edges()
 
         G = nx.Graph()
@@ -85,23 +85,23 @@ class GenUS:
         G.add_edges_from(E)
 
         # Iteratively repeat algorithm until condition is satisfied
-            
+        
         chordal_count = 0
         while True:
-            T0, T1 = self.recursive_simplicial_fixing(G)
-            print(f">>> {'Remaining vertex set: ':<{self.length}} {T0}")
-            print(f">>> {'Maximal independent set: ':<{self.length}} {T1}")
+            T, VnT = self.recursive_simplicial_fixing(G)
+            print(f">>> {'Remaining vertex set: ':<{self.length}} {VnT}")
+            print(f">>> {'Maximal independent set: ':<{self.length}} {T}")
 
             Gc = nx.complement(G)
-            ISGc = nx.induced_subgraph(Gc, T0)
+            ISGc = nx.induced_subgraph(Gc, T)
             
             status = nx.is_chordal(ISGc)
             message = 'Is Chordal' if status else 'Is Not Chordal'
             
-            print(f">>> {'Original ISGc status: ':<{self.length}} {message}\n")
+            # print(f">>> {'Original ISGc status: ':<{self.length}} {message}\n")
 
-            Tp = T0.copy()
-            for t in T1:
+            Tp = T.copy()
+            for t in VnT:
                 Tp.append(t)
                 IGc = nx.induced_subgraph(Gc, Tp)
 
@@ -120,19 +120,64 @@ class GenUS:
                 print(">>> Final set found!\n")
                 break
 
-        Gp = nx.induced_subgraph(G, T0)
-        print(f">>> {'Final set T0: ':<{25}}  {T0}\n")
+        Gp = nx.induced_subgraph(G, T)
+        print(f">>> {'Final set T: ':<{25}}  {T}\n")
 
         mis_model = MISIP(Gp)
         mis_model.optimize()
         S = mis_model.opt_soln()
 
-        print(f"Maximum independent set S: {S}")
+        print(f"\n>>> {'Maximum independent set S:':<{25}} {S}")
 
         clique_list = list(nx.find_cliques(Gp))
-        print(clique_list)
+        print(f">>> {'Full Clique List: ':<{26}} {clique_list}")
 
-        # Need to find the disjoint cliques where K_1 \cup ... \cup K_{|S|} = T0
+        # print(">>> Comination List: \n")
+        final_clist = None
 
-        GPlot = GraphPlot()
-        GPlot.disp_graph(Gp)
+        for c_list in itertools.combinations(clique_list, len(S)):
+            # print(f">>> Current Combination: {c_list}")
+            cand_list = list(set([item for sublist in c_list for item in sublist]))               # Collect the vertices to the clique combination
+
+            if list(Gp.nodes) == cand_list:                                                       # Check if the combination equals the nodes to the induced subgraph G'
+                final_clist = list(c_list)
+                break
+
+        print(f">>> {'Clique Cover List: ':<{26}} {final_clist}\n")
+
+        for t in VnT:
+            print(f"Current node: {t}")
+            print(f"{f'Neighborhood at {t}: ':<{20}} {list(nx.neighbors(G, t))}\n")
+
+        for clique in final_clist:
+            print(f"Clique: {clique}")
+
+        print("")
+
+        clique_dict = {}
+        for key in final_clist:
+            clique_dict[tuple(key)] = list(key)
+
+        for t in T:
+            for clique in final_clist:
+                Nt = list(nx.neighbors(G, t))
+                if set(clique).issubset(Nt):
+                    clique_dict[tuple(clique)].append(t)
+
+        for key, val in clique_dict.items():
+            print(f"{f'Before: {list(key)}':<{14}} -> {f'After: {val}':<{10}}")
+
+        Eu = []
+        for key, E in clique_dict.items(): 
+            for v in E: Eu.append(v)
+
+        print(f"\nEu: {Eu}")
+        Gu = nx.induced_subgraph(G, Eu)
+
+        # GPlot = GraphPlot()
+        # GPlot.disp_graph(Gu)
+
+        return
+    
+    def greedy_method(self):
+        pass
