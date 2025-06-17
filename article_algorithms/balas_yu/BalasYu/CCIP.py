@@ -19,10 +19,7 @@ class CCIP:
 
         ## Clique constraint - \Sum cliques that vertex i appears for i \in G.nodes() such that \Sum >= 1
         for v in self.G.nodes():
-            self.model.addConstr(
-            gp.quicksum(x[u] for u, clique in enumerate(self.cliques) if v in list(clique)) >= 1, 
-                name=f"cover_{v}"
-            )
+            self.model.addConstr(gp.quicksum(x[u] for u, clique in enumerate(self.cliques) if v in list(clique)) >= 1)
         
         cost = [1 for _ in range(len(self.cliques))]
         

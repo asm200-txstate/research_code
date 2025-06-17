@@ -113,32 +113,6 @@ class GenUS:
 
         print(f">>> {'Full Clique Cover: ':<{26}} {CC}\n")
 
-        clique_dict = {}                                                                       
-        for key in CC:
-            clique_dict[tuple(key)] = list(key)
-
-        # Sequentially adding vertices v \in V\T to cliques containing vertices in N(v), giving cliques \hat{K_{1}}, ..., \hat{K_{|S|}}
-        for t in T:
-            for clique in CC:
-                Nt = list(nx.neighbors(G, t))
-                if set(clique).issubset(Nt):
-                    clique_dict[tuple(clique)].append(t)
-        
-        for key, val in clique_dict.items():
-            print(f"{f'Before: {list(key)}':<{14}} -> {f'After: {val}':<{10}}")
-
-        U = []
-        for key, E in clique_dict.items(): 
-            for v in E: U.append(v)
-
-        print(f"\n{'>>> Vertex set U: ':<{29}} {U}")                                                                    # Viewing the vertex set U where U is the union of \hat{K_{1}}, ..., \hat{K_{|S|}}
-        Gu = nx.induced_subgraph(G, U)
-        
-        MIS_model = MISIP(Gu)
-        MIS_model.optimize()
-        if MIS_model.opt_cost() <= len(S): print(f">>> {'Final Result:':<{25}} Valid, a(G[U]) <= |S|")
-        else: print(f">>> {'Final Result:':<{25}} Invalid, a(G[U]) > |S|")
-
         return
     
     def greedy_method(self):
