@@ -58,7 +58,6 @@ class GraphPlot:
     def disp_graph(self, G : nx): 
         pos = nx.circular_layout(G, 2)
         nx.draw_networkx(G, pos, width=2, node_size=800, font_size=12, font_color='white')
-
         plt.title(f"Induced Subgraph for $K_{{{len(G.nodes())}}}$")
         plt.show()
 

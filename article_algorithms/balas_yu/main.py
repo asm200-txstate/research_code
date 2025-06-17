@@ -33,8 +33,23 @@ def main(argc, argv):
 
     # Future task: See if one can make objects for vertices and edges
     V = [v+1 for v in range(10)]
+
     E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]
-    
+
+    # E = [[1,3], [1,4], [2,4], [2,5], [3,5],
+    #      [1,6], [2,7], [3,8], [4,9], [5,10],
+    #      [6,7], [7,8], [8,9], [9,10], [10,6]]
+
+    # E = [[1,2], [1,6], [1,8],
+    #      [2,3], [2,6], [2,7], [2,10],
+    #      [3,4], [3,5], [3,8], [3,9],
+    #      [4,6], [4,10],
+    #      [5,6], [5,7], [5,10],
+    #      [6,9], 
+    #      [7,8], [7,9],
+    #      [8,9], [8,10],
+    #      [9,10]]
+
     G = nx.Graph()
     G.add_nodes_from(V)     # Defining the vertices to the graph 
     G.add_edges_from(E)     # Defining the edges to the graph

@@ -79,47 +79,21 @@ class GenUS:
         return F0, F1
     
     def chordal_method(self, G : nx):
-        V, E = G.nodes(), G.edges()
 
-        G = nx.Graph()
-        G.add_nodes_from(V)
-        G.add_edges_from(E)
+        GPlot = GraphPlot()
 
-        # Iteratively repeat algorithm until condition is satisfied
+        VnT, T = self.recursive_simplicial_fixing(G)
+        print(f">>> {'Remaining vertex set: ':<{self.length}} {VnT}")
+        print(f">>> {'Maximal independent set: ':<{self.length}} {T}")
+
+        Gc = nx.complement(G)
+        ISGc = nx.induced_subgraph(Gc, T)
         
-        chordal_count = 0
-        while True:
-            T, VnT = self.recursive_simplicial_fixing(G)
-            print(f">>> {'Remaining vertex set: ':<{self.length}} {VnT}")
-            print(f">>> {'Maximal independent set: ':<{self.length}} {T}")
+        status = nx.is_chordal(ISGc)
+        message = 'Is Chordal' if status else 'Is Not Chordal'            
+        print(f">>> {'Original ISGc status: ':<{self.length}} {message}\n")
 
-            Gc = nx.complement(G)
-            ISGc = nx.induced_subgraph(Gc, T)
-            
-            status = nx.is_chordal(ISGc)
-            message = 'Is Chordal' if status else 'Is Not Chordal'
-            
-            # print(f">>> {'Original ISGc status: ':<{self.length}} {message}\n")
-
-            Tp = T.copy()
-            for t in VnT:
-                Tp.append(t)
-                IGc = nx.induced_subgraph(Gc, Tp)
-
-                status = nx.is_chordal(IGc)
-                message = 'Is Chordal' if status else 'Is Not Chordal'
-                
-                # print(f">>> {f'ISGc status after adding {t}':<{27}} ... {message}")
-                Tp.remove(t)
-
-                if status: chordal_count += 1                                                  # Counting the cases appending t in T1\T0 to \overline{G}[T0] to remain chordal
-
-            if chordal_count != 0: 
-                print(">>> Try again ....\n")
-                chordal_count = 0                                                              # Reset count and repeat process
-            else: 
-                print(">>> Final set found!\n")
-                break
+        # GPlot.disp_graph(G)
 
         Gp = nx.induced_subgraph(G, T)
         print(f">>> {'Final set T: ':<{25}}  {T}\n")
