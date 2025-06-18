@@ -66,6 +66,16 @@ def main(argc, argv):
     RCF = GenUS()
     RCF.chordal_method(G)
 
+    # Minor update to GenGraph.gen_E() method
+    # GenG = GenGraph(8)
+    # V = GenG.gen_V() 
+    # E = GenG.gen_E()
+    # G.add_nodes_from(V)
+    # G.add_edges_from(E)
+
+    # DispG = GraphPlot()
+    # DispG.disp_graph(G)
+
 if __name__ == "__main__":
     if len(sys.argv) < 2: 
         pass

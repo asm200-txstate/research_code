@@ -18,6 +18,7 @@
 ## ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
 
 from random import random
+from itertools import combinations
 
 class GenGraph:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -61,8 +62,7 @@ class GenGraph:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def gen_E(self):
         E = []
-        for u in range(self.card_V):
-            for v in range(self.card_V):
-                add_uv = 1 if random() < 0.50 else 0                        ## Choose if the edge [u,v] is included
-                if u < v and add_uv: E.append([u+1, v+1])                   ## If u < v and [u,v] is selected, append to E
+        for edge in combinations(range(self.card_V), 2):
+            edge = [v + 1 for v in edge]
+            if random() < 0.50: E.append(edge)
         return E
