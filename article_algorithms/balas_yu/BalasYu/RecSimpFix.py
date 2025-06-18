@@ -10,7 +10,16 @@ class GenUS:
     def __init__(self): 
         self.length = 26
 
-    def indepSimplicial(self, G, S): # Update with algorithm 2 in lecture notes
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    # Method Name: N/A
+    #
+    # Description: N/A
+    #
+    # Argument(s): N/A
+    #
+    # Return(s): N/A
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    def indepSimplicial(self, G, S): 
         I, V_p = [], list(G.nodes())
         
         while V_p != []:
@@ -25,28 +34,40 @@ class GenUS:
         
         return I
 
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    # Method Name: N/A
+    #
+    # Description: N/A
+    #
+    # Argument(s): N/A
+    #
+    # Return(s): N/A
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def simplicial(self, G):
-        simplicial_dict = {}
+        simplicial_list = []
         
         for vertex in G.nodes():
-            simplicial_dict[vertex] = False
-            simplicial_count = 0
-            neighborhood = list(G.neighbors(vertex)) # Open neighborhood N_{G'}(v)
-                    
-            is_simplicial = True
-            for edge in itertools.combinations(neighborhood, 2): # Check if neighborhood of v forms a clique
+            neighborhood = list(G.neighbors(vertex))                    # Open neighborhood N_{G'}(v)
+            simplicial_status = True
+
+            for edge in itertools.combinations(neighborhood, 2):        # Check if open neighborhood of v forms a clique
                 if not G.has_edge(edge[0], edge[1]):
-                    is_simplicial = False
+                    simplicial_status = False
                     break
             
-            if is_simplicial:
-                simplicial_dict[vertex] = True
-                simplicial_count += 1
-            
-    #    print(f"Final simplicial vertex count: {simplicial_count}")
-    
-        return [v for v in G.nodes() if simplicial_dict[v] == True] # returns the set of vertices of G
+            if simplicial_status: simplicial_list.append(vertex)
 
+        return simplicial_list                                          # returns the set of vertices of G
+
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    # Method Name: N/A
+    #
+    # Description: N/A
+    #
+    # Argument(s): N/A
+    #
+    # Return(s): N/A
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def recursive_simplicial_fixing(self, G):
         V, E = G.nodes(), G.edges()
         
@@ -59,12 +80,12 @@ class GenUS:
             S = self.simplicial(G_p)
             D = self.indepSimplicial(G_p, S)
             
-            for v in D:
+            for v in D:                                 # Update F0 and F1
                 F1.append(v)
                 for u in G_p.neighbors(v):
                     if u not in F0: F0.append(u)
             
-            for v in D:
+            for v in D:                                 # Flag v as True if v \in N_{G_p}[v]
                 remove[v] = True
                 for u in G_p.neighbors(v): remove[u] = True
             
@@ -78,10 +99,19 @@ class GenUS:
         
         return F0, F1
     
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    # Method Name: N/A
+    #
+    # Description: N/A
+    #
+    # Argument(s): N/A
+    #
+    # Return(s): N/A
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def chordal_method(self, G : nx):
 
         GPlot = GraphPlot()
-
+        
         VnT, T = self.recursive_simplicial_fixing(G)
         print(f">>> {'Remaining vertex set: ':<{self.length}} {VnT}")
         print(f">>> {'Maximal independent set: ':<{self.length}} {T}")
@@ -113,7 +143,33 @@ class GenUS:
 
         print(f">>> {'Full Clique Cover: ':<{26}} {CC}\n")
 
+        clique_dict = {}
+        for idx, clique in enumerate(clique_list):
+            clique_dict[idx] = clique.copy()
+
+        # Almost correct, need to fix - find the bug
+        for vertex in VnT: 
+            neighborhood = list(G.neighbors(vertex))
+            for idx, clique in enumerate(clique_list):
+                C_set, N_set = set(clique), set(neighborhood)
+                if C_set.issubset(N_set): 
+                    print(f"Appending {vertex} to {clique_dict[idx]}")
+                    clique_dict[idx].append(vertex)
+        
+        for key, val in clique_dict.items():
+            print(f"key: {key} - val: {val}")
+        #     print(f"Clique status: {nx.is_clique(G, list(val))}")
+
         return
     
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    # Method Name: N/A
+    #
+    # Description: N/A
+    #
+    # Argument(s): N/A
+    #
+    # Return(s): N/A
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def greedy_method(self):
         pass
