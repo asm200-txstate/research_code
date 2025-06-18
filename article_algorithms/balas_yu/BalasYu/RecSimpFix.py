@@ -110,7 +110,7 @@ class GenUS:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def chordal_method(self, G : nx):
 
-        GPlot = GraphPlot()
+        lot = GraphPlot()
         
         VnT, T = self.recursive_simplicial_fixing(G)
         print(f">>> {'Remaining vertex set: ':<{self.length}} {VnT}")
@@ -118,26 +118,25 @@ class GenUS:
 
         Gc = nx.complement(G)
         ISGc = nx.induced_subgraph(Gc, T)
-        
+  
         status = nx.is_chordal(ISGc)
         message = 'Is Chordal' if status else 'Is Not Chordal'            
         print(f">>> {'Original ISGc status: ':<{self.length}} {message}\n")
 
-        # GPlot.disp_graph(G)
+        # lot.disp_graph(G)
 
-        Gp = nx.induced_subgraph(G, T)
+        GT = nx.induced_subgraph(G, T)
         print(f">>> {'Final set T: ':<{25}}  {T}\n")
 
-        mis_model = MISIP(Gp)
+        mis_model = MISIP(GT)
         mis_model.optimize()
         S = mis_model.opt_soln()
-
         print(f"\n>>> {'Maximum independent set S:':<{25}} {S}")
 
-        clique_list = list(nx.find_cliques(Gp))
+        clique_list = list(nx.find_cliques(GT))
         print(f">>> {'Full Clique List: ':<{26}} {clique_list}")
 
-        MCC_model = CCIP(Gp, clique_list)
+        MCC_model = CCIP(GT, clique_list)
         MCC_model.optimize()
         CC = MCC_model.opt_soln()
 
@@ -150,15 +149,34 @@ class GenUS:
         # Almost correct, need to fix - find the bug
         for vertex in VnT: 
             neighborhood = list(G.neighbors(vertex))
-            for idx, clique in enumerate(clique_list):
-                C_set, N_set = set(clique), set(neighborhood)
+            for idx in range(len(clique_list)):
+                C_set, N_set = set(clique_dict[idx]), set(neighborhood)
                 if C_set.issubset(N_set): 
-                    print(f"Appending {vertex} to {clique_dict[idx]}")
+                    # print(f"Clique: {C_set} | Neighborhood {neighborhood}")
+                    # print(f"Appending {vertex} to {clique_dict[idx]}")
                     clique_dict[idx].append(vertex)
-        
-        for key, val in clique_dict.items():
-            print(f"key: {key} - val: {val}")
-        #     print(f"Clique status: {nx.is_clique(G, list(val))}")
+                    # print(f"Now: {clique_dict[idx]}\n")
+
+        # G_cliques = list(nx.find_cliques(G))
+        # print(f"\nClique List: {G_cliques}\n")
+
+        # for key, val in clique_dict.items(): print(f"key: {key} - val: {val}")
+
+        U = set([])
+        for clique in clique_dict.values():
+            print(f"clique: {set(clique)}")
+            for v in clique: U.add(v)
+        U = list(U)
+
+        print(f"Final set U: {U}") 
+
+        Gp = nx.induced_subgraph(G, U)
+        mis_model = MISIP(Gp)
+        mis_model.optimize()
+        cost = mis_model.opt_cost()
+
+        if (cost <= len(S)): print("Good output!")
+        else: print("Bad output!")
 
         return
     
