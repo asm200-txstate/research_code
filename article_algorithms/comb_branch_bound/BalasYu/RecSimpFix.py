@@ -179,8 +179,8 @@ class GenUS:
         mis_model.optimize()
         cost = mis_model.opt_cost()
 
-        if (cost <= len(S)): print("Good output!")
-        else: print("Bad output!")
+        if (cost <= len(S)): print("Good output!\n")
+        else: print("Bad output!\n")
 
         return S, U
     
