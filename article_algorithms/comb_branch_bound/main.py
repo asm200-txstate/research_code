@@ -53,7 +53,7 @@ def main(argc, argv):
     #      [8,9], [8,10],
     #      [9,10]]
 
-    GenG = GenGraph(20)
+    GenG = GenGraph(50)
     V, E = GenG.gen_V(), GenG.gen_E()
 
     G = nx.Graph()
@@ -61,9 +61,9 @@ def main(argc, argv):
     G.add_edges_from(E)     # Defining the edges to the graph
 
     BBStrat = BYBBStrat()
-    BBStrat.branch_scheme(G)               # Find the maximal independent set - apply recursion
+    BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
 
-    # G_p = nx.induced_subgraph(G, [1,2,3,8,9])   # Sample induced subgraph
+    # G_p = nx.induced_subgraph(G, [1,2,3,8,9])     # Sample induced subgraph
 
     # DispG = GraphPlot()
     # DispG.disp_graph(G) 
