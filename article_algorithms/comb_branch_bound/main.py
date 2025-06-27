@@ -23,7 +23,7 @@ sys.dont_write_bytecode = True                                                  
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
 from BalasYu.BranchScheme import BYBBStrat                                      ## Access the class to perform the branc and bound algorithm
-from BalasYu.RecSimpFix import GenUS
+from BalasYu.RecSimpFix import RSF
 
 import networkx as nx
 
@@ -53,8 +53,8 @@ def main(argc, argv):
     #      [8,9], [8,10],
     #      [9,10]]
 
-    GenG = GenGraph(50)
-    V, E = GenG.gen_V(), GenG.gen_E()
+    # GenG = GenGraph(23)
+    # V, E = GenG.gen_V(), GenG.gen_E()
 
     G = nx.Graph()
     G.add_nodes_from(V)     # Defining the vertices to the graph 

@@ -1,16 +1,17 @@
+import itertools
 import networkx as nx
-from networkx.algorithms.approximation.clique import max_clique
 
+# max_clique information
 # Reference: https://networkx.org/documentation/networkx-2.4/reference/algorithms/generated/networkx.algorithms.approximation.clique.max_clique.html
 
 from random import choice
-import itertools
+from networkx.algorithms.approximation.clique import max_clique
 
 from .MISIP import MISIP
 from Graph.GraphPlot import GraphPlot
 from .CCIP import CCIP
 
-class GenUS:
+class RSF:
     def __init__(self): 
         self.length = 26
 
@@ -114,7 +115,7 @@ class GenUS:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     def chordal_method(self, G : nx):
 
-        lot = GraphPlot()
+        GPlot = GraphPlot()
         
         VnT, T = self.recursive_simplicial_fixing(G)
         print(f">>> {'Remaining vertex set: ':<{self.length}} {VnT}")
