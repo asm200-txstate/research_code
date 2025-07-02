@@ -58,7 +58,7 @@ class ChordalMethod:
 
         self.U = set([])
         for clique in clique_dict.values():
-            print(f"clique: {set(clique)}")
+            print(f"clique: {list(clique)}")
             for v in clique: self.U.add(v)
         self.U = list(self.U)
     

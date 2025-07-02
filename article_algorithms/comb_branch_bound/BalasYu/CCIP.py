@@ -4,7 +4,7 @@ from gurobipy import GRB, quicksum
 import networkx as nx
 
 class CCIP:
-    def __init__(self, G, cliques):
+    def __init__(self, G : nx, cliques : list):
         self.G = G
         self.cliques = cliques
 

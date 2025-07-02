@@ -25,10 +25,11 @@ from random import random
 from OutputPrint.Output import OutputPrint
 from .RecSimpFix import RSF
 from .MISIP import MISIP
+from .CCIP import CCIP
 from .GreedyMethod import GreedyMethod
 from .ChordalMethod import ChordalMethod
 
-class BYBBStrat:
+class BYBScheme:
     def __init__(self):
         self.disp_info = OutputPrint()
         self.timer = 0                                                              # Pause the output terminal
@@ -36,10 +37,6 @@ class BYBBStrat:
     # def branch_scheme_helper(self, Graph : Graph, I : list, X : list, level : int): 
     def branch_scheme_helper(self, G : nx, I : list, X : list, lvl : int):
         print(f"Current level: {lvl}")
-        
-        # GenSets = GenUS()
-        # S, U = GenSets.chordal_method(G)
-        # S, U = GenSets.greedy_method(G)
 
         # MGreedy = GreedyMethod(G)
         # MGreedy.greedy_cc()
@@ -51,12 +48,17 @@ class BYBBStrat:
 
         V = list(G.nodes)
 
-        MIS_model = MISIP(nx.induced_subgraph(G, U))
-        MIS_model.optimize()
-        if MIS_model.opt_cost() <= len(S): print("Pass!")
-        else: print("Fail!")
+        mis_model = MISIP(nx.induced_subgraph(G, U))
+        mis_model.optimize()
 
-        print(f"len(S) = {len(S)} | a(U) = {MIS_model.opt_cost()}")
+        cc_model = CCIP(G, list(nx.find_cliques(G)))
+        cc_model.optimize()
+
+        print(f"\n|S| = {len(S)}")
+        print(f"a(G[U]) = {mis_model.opt_cost()}")
+        print(f"p(G[U]) = {cc_model.opt_cost()}\n")
+
+        # print(f"len(S) = {len(S)} | a(U) = {mis_model.opt_cost()}")
 
         VnU = {v : G.degree(v) for v in V if v not in U}
         X_list = list(dict(sorted(VnU.items(), key = lambda item : item[1])).keys())   # Step 2: Sort vertices in V\U by degree of vertices 
