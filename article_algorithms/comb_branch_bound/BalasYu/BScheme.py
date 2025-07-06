@@ -26,7 +26,7 @@ from OutputPrint.Output import OutputPrint
 from .RecSimpFix import RSF
 from .MISIP import MISIP
 from .CCIP import CCIP
-from .GreedyMethod import GreedyMethod
+from .GreedyMethod import GMethod
 from .ChordalMethod import ChordalMethod
 
 class BYBScheme:
@@ -38,7 +38,7 @@ class BYBScheme:
     def branch_scheme_helper(self, G : nx, I : list, X : list, lvl : int):
         print(f"Current level: {lvl}")
 
-        # MGreedy = GreedyMethod(G)
+        # MGreedy = GMethod(G)
         # MGreedy.greedy_cc()
         # U, S = MGreedy.gen_sets()
 

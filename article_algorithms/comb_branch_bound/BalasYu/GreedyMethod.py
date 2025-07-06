@@ -22,7 +22,7 @@ import networkx as nx
 from networkx.algorithms.approximation.clique import max_clique
 from .MISIP import MISIP
 
-class GreedyMethod():
+class GMethod():
     def __init__(self, G): 
         self.G = G
         self.mis_model = MISIP(G)

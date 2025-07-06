@@ -37,7 +37,7 @@ class MISIP:
 
         ## Define edge constratins
         for [u, v] in E: self.model.addConstr(x[u] + x[v] <= 1, f"C1: ({u},{v})")
-            
+        
         ## Vertex Constraints
         for u in V: self.model.addConstr(x[u] >= 0, f"C2: {u}")
 

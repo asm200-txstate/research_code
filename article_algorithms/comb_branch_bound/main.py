@@ -22,10 +22,13 @@ sys.dont_write_bytecode = True                                                  
 
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
-from BalasYu.BScheme import BYBScheme                                           ## Access the class to perform the branc and bound algorithm
 from BalasYu.RecSimpFix import RSF
 from BalasYu.CCIP import CCIP
-from BalasYu.RecSimpFix import RSF
+
+from BalasYu.BScheme import BYBScheme                                           ## Access the class to perform the branch and bound algorithm
+from BalasXue.WBScheme import BXWBScheme                                        ## Access the class to perform the weighted branch and bound algorithm 
+from BalasXue.WGreedyMethod import WGMethod
+from BalasXue.WMISIP import WMISIP
 
 import networkx as nx
 from random import randint
@@ -56,10 +59,6 @@ def main(argc, argv):
     #      [8,9], [8,10],
     #      [9,10]]
 
-    # V = [v+1 for v in range(7)]
-    # E = [[1,2], [2,3], [3,4], [4,5], [5,6], [1,6], 
-    #      [1,7], [2,7], [3,7], [4,7], [5,7], [6,7]]
-
     V = [v+1 for v in range(10)]
     E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]          
     
@@ -67,9 +66,39 @@ def main(argc, argv):
     G.add_nodes_from(V)
     G.add_edges_from(E)
 
-    BBStrat = BYBScheme()
-    BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
+    # BBStrat = BYBScheme()
+    # BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
 
+    # New Task: In the algorithm  Balas & Xue, we're dealing with weighted graphs, so define integer weights. 
+    # While you can have real weights, let's keep it simple and make them integer. 
+    
+    W = {}
+    for v in G.nodes: W[v] = randint(0, 10)
+    
+    # WBBStrat = BXWBScheme()
+    # WBBStrat.branch_scheme(G, W)
+
+    WGM = WGMethod(G, W)
+    WGM.wg_method()
+
+    U, S = WGM.gen_sets()
+    print(f"\nSet U: {U}")
+    print(f"Set S: {S}")
+
+    K_list = WGM.gen_cliques()
+    print(f"K list: {K_list}")
+
+    is_graph = nx.induced_subgraph(G, U)
+
+    wmis_model = WMISIP(is_graph, W)
+    wmis_model.optimize()
+    opt_nodes = wmis_model.opt_soln()
+
+    S_weight, GU_weight = 0, 0
+
+    for v in S: S_weight += W[v]
+    for v in opt_nodes: GU_weight += W[v]
+        
 if __name__ == "__main__":
     if len(sys.argv) < 2: 
         pass
