@@ -1,25 +1,16 @@
 import networkx as nx
 
 from .WMISIP import WMISIP
+from .WGreedyMethod import WGMethod
 
 class BXWBScheme:
     def __init__(self): pass
 
     def branch_scheme_helper(self, G : nx, W : dict, I : list, X : list, lvl : int):
 
-        while True: 
-            if len(list(G.nodes)) != 0:  S = nx.maximal_independent_set(G)
-            else: S = []
-            U = None
-
-            S_weight = 0                                                # Sum of weights on S
-            for v in S: S_weight = S_weight + W[v]
-
-            wmis_model = WMISIP(G, W)
-            wmis_model.optimize()
-            if wmis_model.opt_cost() <= S_weight: 
-                U = wmis_model.opt_soln()
-                break
+        WGM = WGMethod(G, W)
+        WGM.wg_method()
+        U, S = WGM.gen_sets()
 
         NW_dict = {}                                                   # Neighborhood weight dictionary
         for v in G.nodes:                                              # Order vertices by sum of weights in N(v)
@@ -34,7 +25,7 @@ class BXWBScheme:
 
         for idx, v in enumerate(VnU_list): 
             root = v
-            print(f"Current root: {v}, Index: {idx}")
+            # print(f"Current root: {v}, Index: {idx}")
 
             Xj_tilde, not_N = [], list(nx.non_neighbors(G, v))                      
             for jdx in range(idx): Xj_tilde.append(VnU_list[jdx])                      # Xj_tilde := {xj : j < i}
@@ -60,7 +51,7 @@ class BXWBScheme:
             I.remove(root)
 
         if VnU_list == []:
-            print("Final sets!")
+            print("** Final sets!")
             print(f"I: {I}")
             print(f"X: {X}")
 

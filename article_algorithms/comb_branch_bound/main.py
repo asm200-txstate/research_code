@@ -22,13 +22,15 @@ sys.dont_write_bytecode = True                                                  
 
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
+
 from BalasYu.RecSimpFix import RSF
 from BalasYu.CCIP import CCIP
-
 from BalasYu.BScheme import BYBScheme                                           ## Access the class to perform the branch and bound algorithm
+
 from BalasXue.WBScheme import BXWBScheme                                        ## Access the class to perform the weighted branch and bound algorithm 
 from BalasXue.WGreedyMethod import WGMethod
 from BalasXue.WMISIP import WMISIP
+from BalasXue.WChordalMethod import WCMethod
 
 import networkx as nx
 from random import randint
@@ -59,45 +61,60 @@ def main(argc, argv):
     #      [8,9], [8,10],
     #      [9,10]]
 
-    V = [v+1 for v in range(10)]
+    V = [v+1 for v in range(8)]
     E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]          
-    
+    E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8]]
+
+    # GenG = GenGraph(8)
+    # V, E = GenG.gen_V(), GenG.gen_E()
+
     G = nx.Graph()
     G.add_nodes_from(V)
     G.add_edges_from(E)
+
+    # Find the maximal induced subgraph G[T] such that \complement{G}[T] is chordal. 
+    G_comp = nx.complement(G)
+    degree = {}
+    for v in G_comp.nodes: degree[v] = G_comp.degree(v)
+
+    degree = sorted(degree.items(), key=lambda item: item[1])
+    degree_dict = {}
+    for pair in degree: degree_dict[pair[0]] = pair[1]
+    for v, deg in degree_dict.items(): print(f"deg({v}) = {deg}")
+
+    T = []
+    for v, deg in degree_dict.items():
+        T_temp = T.copy()
+        T_temp.append(v)
+        # print(f"Current Temp List: {T_temp} - Appending: {v}")
+        if nx.is_chordal(nx.induced_subgraph(G_comp, T_temp)): 
+            print(f"Pass - Will add {v} to T ...")
+            T.append(v)
+        else: print(f"Fail - Adding {v} makes the subgraph non-chordal ...")
+
+    print(f"Final Output: {T}")
+    print(f"Final Result: {nx.is_chordal(nx.induced_subgraph(G_comp, T))}")
+
+    GPlot = GraphPlot()
+    GPlot.disp_graph(nx.complement(G))
+
+
+
 
     # BBStrat = BYBScheme()
     # BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
 
     # New Task: In the algorithm  Balas & Xue, we're dealing with weighted graphs, so define integer weights. 
     # While you can have real weights, let's keep it simple and make them integer. 
+
+    # W = {}
+    # for v in G.nodes: W[v] = randint(0, 10)
     
-    W = {}
-    for v in G.nodes: W[v] = randint(0, 10)
-    
-    # WBBStrat = BXWBScheme()
-    # WBBStrat.branch_scheme(G, W)
+    # # WBBStrat = BXWBScheme()
+    # # WBBStrat.branch_scheme(G, W)
 
-    WGM = WGMethod(G, W)
-    WGM.wg_method()
-
-    U, S = WGM.gen_sets()
-    print(f"\nSet U: {U}")
-    print(f"Set S: {S}")
-
-    K_list = WGM.gen_cliques()
-    print(f"K list: {K_list}")
-
-    is_graph = nx.induced_subgraph(G, U)
-
-    wmis_model = WMISIP(is_graph, W)
-    wmis_model.optimize()
-    opt_nodes = wmis_model.opt_soln()
-
-    S_weight, GU_weight = 0, 0
-
-    for v in S: S_weight += W[v]
-    for v in opt_nodes: GU_weight += W[v]
+    # WCM = WCMethod(G, W)
+    # WCM.wc_method()
         
 if __name__ == "__main__":
     if len(sys.argv) < 2: 

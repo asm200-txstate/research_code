@@ -19,15 +19,18 @@
 
 import time
 import networkx as nx
-
 from random import random
+from random import randint
 
 from OutputPrint.Output import OutputPrint
+
 from .RecSimpFix import RSF
 from .MISIP import MISIP
 from .CCIP import CCIP
 from .GreedyMethod import GMethod
 from .ChordalMethod import ChordalMethod
+
+from BalasXue.WChordalMethod import WCMethod
 
 class BYBScheme:
     def __init__(self):
@@ -35,7 +38,7 @@ class BYBScheme:
         self.timer = 0                                                              # Pause the output terminal
     
     # def branch_scheme_helper(self, Graph : Graph, I : list, X : list, level : int): 
-    def branch_scheme_helper(self, G : nx, I : list, X : list, lvl : int):
+    def branch_scheme_helper(self, G : nx, I : list, X : list, lvl : int, W : dict):
         print(f"Current level: {lvl}")
 
         # MGreedy = GMethod(G)
@@ -45,6 +48,11 @@ class BYBScheme:
         MChordal = ChordalMethod(G)
         MChordal.chordal_method()
         U, S = MChordal.gen_sets()
+
+        # Note to reader: Wouldn't make sense since you're looking at the weights themselves and not the vertices in the set. 
+        # MWChordal = WCMethod(G, W)
+        # MWChordal.wc_method()
+        # U, S = MWChordal.gen_sets()
 
         V = list(G.nodes)
 
@@ -85,7 +93,7 @@ class BYBScheme:
             time.sleep(self.timer)
 
             lvl += 1                                                                  
-            self.branch_scheme_helper(Gt, I, X, lvl)                                   # Call recursive case on ISG of G, I, X (Update level entry - Backtracking P-1.5)
+            self.branch_scheme_helper(Gt, I, X, lvl, W)                                   # Call recursive case on ISG of G, I, X (Update level entry - Backtracking P-1.5)
             lvl -= 1
 
             for v in V:                                                                # Remove current X and I candidates (Backtracking P-2)
@@ -98,4 +106,6 @@ class BYBScheme:
         return
 
     def branch_scheme(self, G : nx):
-        self.branch_scheme_helper(G, [], [], 0)
+        W = {}
+        for v in G.nodes: W[v] = randint(0, 10)
+        self.branch_scheme_helper(G, [], [], 0, W)
