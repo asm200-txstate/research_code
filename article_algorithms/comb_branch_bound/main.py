@@ -101,7 +101,9 @@ def main(argc, argv):
     # GPlot.disp_graph(nx.complement(G))
 
     BM = BMethod(G, W)
-    BM.babel_method_p1()
+    BM.babel_method()
+    BM.node_elimination()
+    BM.branching_scheme()
 
     # # BBStrat = BYBScheme()
     # # BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
