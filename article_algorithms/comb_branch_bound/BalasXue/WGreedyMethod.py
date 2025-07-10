@@ -68,7 +68,6 @@ class WGMethod:
             print(f"Curr W: {min_W}")
             print(f"Curr weights: {curr_weights.copy()}")
 
-            # Update - you're still looking at the vertices of the entire graph, not the induced version after each iteration.
             weight_update = {}
             for v in curr_vertices:
                 if v in curr_K: weight_update[v] = curr_weights[v] - min_W

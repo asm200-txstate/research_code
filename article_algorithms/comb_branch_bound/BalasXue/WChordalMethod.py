@@ -43,7 +43,6 @@ class WCMethod:
 
         print(f"VnT List: {VnT}")
 
-        ## Check the thought process with Dr. Hicks
         for vertex in VnT: 
             neighborhood = list(self.graph.neighbors(vertex))
             for idx in range(len(clique_list)):
