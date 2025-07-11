@@ -10,6 +10,9 @@ class BMethod:
         self.weights = W
         self.clique_list = []
 
+        self.S = []
+        self.S_weight = 0
+
     def GKD(self):
         gkd_dict = {}
         for v in self.graph.nodes:
@@ -134,5 +137,25 @@ class BMethod:
                 if G_alpha <= S_weight: print("We hit this case!")
                 else: print("Something else ...")
 
+        self.S, self.S_weight = S, S_weight
+
     def branching_scheme(self):
-        pass
+        r = {}
+        for curr_idx, v in enumerate(self.graph.nodes):
+            max_idx = 0
+            for idx, clique in enumerate(self.clique_list):
+                if v in clique: max_idx = idx
+                r[v] = max_idx
+            print(f"Vertex {v} - Max index = {max_idx}")
+
+        print("Final Output: ")
+
+        V_list = {k: v for k, v in sorted(r.items(), key=lambda item: item[1])}
+        for key, val in V_list.items(): print(f"Vertex: {key} - Max Index: {val}")
+
+        s_index = 0
+        for key, val in V_list.items():
+            if r[key] > self.S_weight: 
+                s_index = key
+                print("Inside this case ...")
+            pass
