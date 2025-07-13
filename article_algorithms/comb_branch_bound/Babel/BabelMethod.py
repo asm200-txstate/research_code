@@ -3,6 +3,7 @@ import random
 import networkx as nx
 
 from BalasXue.WMISIP import WMISIP
+from BalasYu.RecSimpFix import RSF
 
 class BMethod:
     def __init__(self, G : nx, W : dict): 
@@ -27,22 +28,7 @@ class BMethod:
 
         print(f"Clique list (so far): {self.clique_list}")
 
-        # for key, cliques in gkd_dict.items():
-        #     print(f"Key: {key} - Clique(s): {list(cliques)}")
-
         return gkd_dict
-    
-    ## Note: Temporary, check with Dr. Hicks on the remark made in Page 7 - Potential 
-    ## bug (or misunderstood step) in implementing the Babel Method (Part 1 method)
-    def maximal_is(self):
-        V, S = list(self.graph.nodes), []
-        while V != []:
-            v = random.choice(V)
-            S.append(v)
-            V.remove(v)
-            for u in nx.neighbors(self.graph, v): 
-                if u in V: V.remove(u)
-        return S
 
     def babel_method(self):
         seen = {v : False for v in self.graph.nodes}
@@ -109,7 +95,13 @@ class BMethod:
             print(f"Clique {clique}")
 
     def node_elimination(self): 
-        S = self.maximal_is()
+        rsf_model = RSF()
+        S_hat = rsf_model.find_simplicial(self.graph)
+        S = rsf_model.indepSimplicial(self.graph, S_hat)
+
+        # print(f"S_hat output: {S_hat}")
+        # print(f"S output: {S}")
+
         K_mathcal = {}
         for v in self.graph.nodes:
             non_Nv = list(nx.non_neighbors(self.graph, v))
@@ -121,6 +113,8 @@ class BMethod:
 
         S_weight = 0
         for v in S: S_weight += self.weights[v]
+        self.S, self.S_weight = S, S_weight
+
         print(f"S Output: {S} - Weight: {S_weight}")
 
         for v in self.graph.nodes:
@@ -137,25 +131,22 @@ class BMethod:
                 if G_alpha <= S_weight: print("We hit this case!")
                 else: print("Something else ...")
 
-        self.S, self.S_weight = S, S_weight
-
     def branching_scheme(self):
         r = {}
-        for curr_idx, v in enumerate(self.graph.nodes):
+        for v in self.graph.nodes:
             max_idx = 0
             for idx, clique in enumerate(self.clique_list):
                 if v in clique: max_idx = idx
                 r[v] = max_idx
             print(f"Vertex {v} - Max index = {max_idx}")
 
-        print("Final Output: ")
+        v_order = []
+        for entry in sorted(r.items(), key=lambda item: item[1]): v_order.append(entry[0])
 
-        V_list = {k: v for k, v in sorted(r.items(), key=lambda item: item[1])}
-        for key, val in V_list.items(): print(f"Vertex: {key} - Max Index: {val}")
+        s_idx = len(v_order)-1
+        for idx in range(len(v_order)):
+            if v_order[idx] > self.S_weight:
+                s_idx = idx
 
-        s_index = 0
-        for key, val in V_list.items():
-            if r[key] > self.S_weight: 
-                s_index = key
-                print("Inside this case ...")
-            pass
+        print("Final output: ")
+        for v in range(s_idx+1, len(v_order)-1): print(f"Vertex: {v}")

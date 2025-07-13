@@ -29,9 +29,7 @@ class GraphPlot:
     #               of the graph G and initializes the vertex and edge sets,
     #               V and E, respectively, via networkx. 
     #
-    # Argument(s):
-    #    * V: The set of vertices to graph G
-    #    * E: The set of edges to graph G 
+    # Argument(s): None
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -49,9 +47,10 @@ class GraphPlot:
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
     # Method Name: disp_graph
     #
-    # Description: Displays the graph G via netowrkx. 
+    # Description: Displays the graph G via netowrkx by displaying only their vertex numbers. 
     #
-    # Argument(s): None
+    # Argument(s): 
+    #    * G: The graph G being displayed
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
@@ -60,6 +59,19 @@ class GraphPlot:
         nx.draw_networkx(G, pos, width=2, node_size=800, font_size=12, font_color='white')
         plt.title(f"Induced Subgraph for $K_{{{len(G.nodes())}}}$")
         plt.show()
+
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
+    # Method Name: disp_weight_graph
+    #
+    # Description: Displays the graph G via netowrkx by displaying both the vertex number and
+    #              their weights. 
+    #
+    # Argument(s): 
+    # * G: The graph G being displayed
+    # * W: The dictionary mapping vertices to their weights in G
+    #
+    # Return(s): None
+    # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
 
     def disp_weight_graph(self, G : nx, W : dict):
         pos = nx.circular_layout(G, 2)
@@ -75,11 +87,12 @@ class GraphPlot:
     #               A caption is used to specify G-tilde.  
     #
     # Argument(s): 
+    #  * G: The graph G being displayed
     #  * Gt: Abbreviated as Gtilde, or \tilde{G}, Gt is an induced subgraph to G (or self.Graph)
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def disp_isgraph(self, G, Gt): # Before: def disp_ISG(self, U, Et):
+    def disp_isgraph(self, G : nx, Gt : nx): # Before: def disp_ISG(self, U, Et):
         pos = nx.circular_layout(G, 2)
 
         Vt = Gt.nodes()

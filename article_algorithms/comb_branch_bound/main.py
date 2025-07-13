@@ -39,7 +39,7 @@ from random import randint
 
 def main(argc, argv):
     V = [v+1 for v in range(10)]
-    E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8]]          # Edge set 1
+    E = [[1,2], [2,3], [3,4], [4,5], [6,7], [7,8], [8,9], [9,10], [3,8], [1,3], [10, 8]]          # Edge set 1
 
     G = nx.Graph()
     G.add_nodes_from(V)
@@ -48,15 +48,13 @@ def main(argc, argv):
     W = {}
     for v in G.nodes: W[v] = randint(1, 10)
 
+    BM = BMethod(G, W)
+    BM.babel_method()
+    BM.node_elimination()
+    BM.branching_scheme()
+
     GPlot = GraphPlot()
-    GPlot.disp_weight_graph(G, W)
-
-    # GPlot.disp_graph(nx.complement(G))
-
-    # BM = BMethod(G, W)
-    # BM.babel_method()
-    # BM.node_elimination()
-    # BM.branching_scheme()
+    # GPlot.disp_weight_graph(G, W)
 
     # # BBStrat = BYBScheme()
     # # BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
