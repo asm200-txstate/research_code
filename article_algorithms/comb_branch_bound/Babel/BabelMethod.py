@@ -132,6 +132,9 @@ class BMethod:
                 else: print("Something else ...")
 
     def branching_scheme(self):
+        # curr_cliques = list(nx.find_cliques(self.graph))
+        # print(f"Cliques in G: {curr_cliques}")
+
         r = {}
         for v in self.graph.nodes:
             max_idx = 0
