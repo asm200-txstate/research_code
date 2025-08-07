@@ -8,17 +8,16 @@ class max_wc:
         temp_dict = {}
         for v in self.graph: temp_dict[v] = nx.degree(self.graph, v)
         
-        self.R = list(dict(sorted(temp_dict.items(), key = lambda item : item[1], reverse=True)))
         self.W_color = {}
-        self.W_node = W.copy() # list(dict(sorted(VnU.items(), key = lambda item : item[1])).keys())
+        self.W_node = W.copy() 
         self.C = {}
         self.color = {}
 
-        # print(f"Sorted output: {self.R}\n")
-        # print(f"W output: {W.items()}")
-
         self.Q = []
         self.Q_max = []
+
+        # print(f"Sorted output: {R}\n")
+        # print(f"W output: {W.items()}")
 
     def curr_sum_weight(self, min_k_w):
         curr_sum = 0
@@ -41,13 +40,13 @@ class max_wc:
 
         return curr_sum <= curr_Qmax_sum - curr_Q_sum
 
-    def ColorSortWeight(self):
+    def ColorSortWeight(self, R : list):
         maxno = 0
         self.C[0], self.C[1] = [], []
         self.W_color[0], self.W_color[1] = -1, -1
 
-        for i in range(len(self.R)): 
-            p = self.R[i]
+        for i in range(len(R)): 
+            p = R[i]
             k = 0
 
             while list(set(self.C[k]).intersection(nx.neighbors(self.graph, p))) != []: k = k + 1
@@ -71,18 +70,22 @@ class max_wc:
         while min_k_w < maxno and self.curr_sum_weight(min_k_w):
             min_k_w += 1
 
-        print(f"R nodes: {self.R}\n")
+        print(f"R nodes: {R}\n")
 
         j = 0
-        for i in range(len(self.graph.nodes)):
-            if self.color[self.R[i]] < min_k_w:
-                print(f"Vertex R[{j}]: {self.R[j]} | Vertex R[{i}]: {self.R[i]}")
-                self.R[j] = self.R[i]
+        for i in range(len(R)-1):
+            print(f"Color: {self.color}")
+            print(f"R: {R}")
+            # print(f"Index: {i} - Vertex: {R[i]}")
+            print(f"Index: {i} - Vertex: {R[i]} - Color: {self.color[R[i]]}")
+            if self.color[R[i]] < min_k_w:
+                print(f"Vertex R[{j}]: {R[j]} | Vertex R[{i}]: {R[i]}")
+                R[j] = R[i]
                 j = j + 1
 
-        if j > 0: self.color[self.R[j]] = -1
+        if j > 0: self.color[R[j]] = -1
 
-        print(f"\nR nodes: {self.R}\n")
+        print(f"\nR nodes: {R}")
         print(f"\nHere in the final line ... - min_k_w: {min_k_w}")
         print(f"Here with maxno = {maxno}\n")
         print(f"Color: {self.color}\n")
@@ -92,8 +95,43 @@ class max_wc:
             for n in range(1, k, 1):
                 ub_k = ub_k + self.W_color[k]
             for i in range(len(self.color[k])-1):
-                self.W_color[self.R[j]] = ub_k
-                self.R[j] = self.color[k][i]
+                self.W_color[R[j]] = ub_k
+                R[j] = self.color[k][i]
                 j = j + 1
     
-    
+    def Expand(self, R : list):
+        
+        while R != []:
+            p = R[len(R)-1]
+            print(f"Output: {p}")
+
+            weight_Q, weight_Qmax = 0, 0
+            for v in self.Q: weight_Q = weight_Q + self.W_node[v]
+            for v in self.Q_max: weight_Qmax = weight_Qmax + self.W_node[v]
+
+            print(f"Q weight: {weight_Q}")
+            print(f"Q_max weight: {weight_Qmax}\n")
+
+            if weight_Q + self.color[p] > weight_Qmax:
+                self.Q.append(p)
+                Rp = list(set(R).intersection(list(nx.neighbors(self.graph, p))))
+                
+                if Rp != []:
+                    
+                    # Need to read more on Tlimit and T[lvl] ....
+                    Rp_dict = {}
+                    for v in Rp: Rp_dict[v] = nx.degree(self.graph, v)
+                    Rp = list(dict(sorted(Rp_dict.items(), key = lambda item : item[1], reverse=True)))
+                    
+                    self.ColorSortWeight(Rp)
+                    self.Expand(Rp)
+                
+                elif weight_Q > weight_Qmax:
+                    self.Qmax = self.Q.copy()
+
+                self.Q.remove(p)
+
+            else: return
+
+            R.remove(p)
+
