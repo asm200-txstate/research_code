@@ -52,7 +52,7 @@ from random import randint
 
 def main(argc, argv):
 
-    G = erdos_renyi_graph(25, 0.5)
+    # G = erdos_renyi_graph(15, 0.2)
 
     # V = [v for v in range(2)]
     # E = [(0,1), (0,2)]
@@ -60,16 +60,16 @@ def main(argc, argv):
     # G.add_nodes_from(V)
     # G.add_edges_from(E)
 
-    # V = [v for v in range(14)]
-    # E = [(0, 1), (1, 3), (1, 4), (2, 3), (3, 4), (4, 5), (2,6), 
-    #      (6,7), (3,7), (3,8), (4,7), (4,8), (7,8), (8,9), (5,9),
-    #      (7,10), (10,11), (7,11), (8,12), (12,13), (8,13)]
-    # G = nx.Graph()
-    # G.add_nodes_from(V)
-    # G.add_edges_from(E)
+    V = [v for v in range(14)]
+    E = [(0, 1), (1, 3), (1, 4), (2, 3), (3, 4), (4, 5), (2,6), 
+         (6,7), (3,7), (3,8), (4,7), (4,8), (7,8), (8,9), (5,9),
+         (7,10), (10,11), (7,11), (8,12), (12,13), (8,13)]
+    G = nx.Graph()
+    G.add_nodes_from(V)
+    G.add_edges_from(E)
 
     BYMethod = BYBScheme()
-    BYMethod.branch_scheme(G)
+    BYMethod.branch_scheme(nx.complement(G), 1)
 
     # mis_model = MISIP(G)
     # mis_model.optimize()

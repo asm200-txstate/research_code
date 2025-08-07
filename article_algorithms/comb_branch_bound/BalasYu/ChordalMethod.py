@@ -43,7 +43,7 @@ class ChordalMethod:
         for v in self.graph.nodes: self.label_dict[v] = []
 
     def choose_vertex(self):
-        max_list, max_val = [], -1
+        max_list, max_len = [], -1
         # print(f"Current label dict: {self.label_dict.items()}")
         for u_node, u_list in self.label_dict.items():
             # print(f"Node: {u_node} - len(u_list): {len(u_list)}")
@@ -54,14 +54,14 @@ class ChordalMethod:
                 # print(f"Case 2: {u_node not in self.seen_list}\n")
 
             if u_list == []: continue 
-            elif max(u_list) >= max_val and u_node not in self.seen_list:
+            elif len(u_list) >= max_len and u_node not in self.seen_list:
                 # print(f"Here with vertex {u_node}")
-                if max(self.label_dict[u_node]) == max_val: max_list.append(u_node)
+                if len(self.label_dict[u_node]) == max_len: max_list.append(u_node)
                 else: 
-                    # print("Here in new list ...")
                     max_list = []
                     max_list.append(u_node)
-                    max_val = max(self.label_dict[u_node])
+                    max_len = len(self.label_dict[u_node])
+                    # print("Here in new list ...")
                     # print(f"max_val: {max_val} - len(max_list): {len(max_list)}")
         
         if len(max_list) == 0: return min(self.graph.nodes)
@@ -94,10 +94,10 @@ class ChordalMethod:
 
     def find_mtis(self):
         for i in range(len(self.graph_comp.nodes) - 1, -1, -1): 
-            # print(f"Index {i}")
+            print(f"Index {i}")
             
             v = self.choose_vertex()
-            # print(f"Chosen vertex: {v}")
+            print(f"Chosen vertex: {v+1}")
 
             isgraph = nx.induced_subgraph(self.graph_comp, list(set(self.T).union([v])))
             if self.is_quasi_simplicial(v, isgraph):
@@ -157,7 +157,7 @@ class ChordalMethod:
         mis_model.optimize()
         self.S = mis_model.opt_soln()
 
-        print(f"Optimal independent set S: {self.S}")
+        # print(f"Optimal independent set S: {self.S}\n")
 
         # Step 3: Find the minimum clique cover for the graph G
 
@@ -206,6 +206,7 @@ class ChordalMethod:
         mis_model.optimize()
         final_S = mis_model.opt_soln()
 
-        print(f"alpha(G[U]): {len(final_S)} | |S|: {len(self.S)}")
+        print(f"\nalpha(G[U]): {len(final_S)} | |S|: {len(self.S)}")
+        print(f"Final set T: {self.T}\n")
     
     def gen_sets(self): return self.U, self.S
