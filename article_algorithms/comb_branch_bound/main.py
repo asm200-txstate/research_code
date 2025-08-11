@@ -21,6 +21,8 @@ import sys
 sys.dont_write_bytecode = True                                                  ## Prevent __pycache__ from being generated
 sys.setrecursionlimit(1000000)
 
+import json
+
 from Graph.GenGraph import GenGraph                                             ## Randomly generate a graph G = (V,E)
 from Graph.GraphPlot import GraphPlot                                           ## Plot the instance of G
 
@@ -52,24 +54,47 @@ from random import randint
 
 def main(argc, argv):
 
-    # G = erdos_renyi_graph(15, 0.2)
-
-    # V = [v for v in range(2)]
-    # E = [(0,1), (0,2)]
-    # G = nx.Graph()
-    # G.add_nodes_from(V)
-    # G.add_edges_from(E)
-
-    V = [v for v in range(14)]
-    E = [(0, 1), (1, 3), (1, 4), (2, 3), (3, 4), (4, 5), (2,6), 
-         (6,7), (3,7), (3,8), (4,7), (4,8), (7,8), (8,9), (5,9),
-         (7,10), (10,11), (7,11), (8,12), (12,13), (8,13)]
+    # G = erdos_renyi_graph(6, 0.5)
+    
+    V = [v for v in range(7)]
+    E = [(0,1), (0,3), (1,4), (1,6),
+         (3,5), (4,5), (4,6)]
     G = nx.Graph()
     G.add_nodes_from(V)
     G.add_edges_from(E)
 
     BYMethod = BYBScheme()
-    BYMethod.branch_scheme(nx.complement(G), 1)
+    status = BYMethod.branch_scheme(G, 1)
+
+    # Chordal Method
+    while True:
+        G = erdos_renyi_graph(7, 0.5)
+        CM = ChordalMethod(G)
+        CM.execute_cm()
+        U, S = CM.gen_sets()
+
+        mis_model = MISIP(nx.induced_subgraph(G, U))
+        mis_model.optimize()
+        cost_output = mis_model.opt_cost()
+    
+        if cost_output != len(S): 
+            print("a(G[U]) != |S|")
+            break
+        if CM.is_chordal(): 
+            print("\overline{G[T]} is not chordal ...")
+            break
+
+    GPlot = GraphPlot()
+    GPlot.disp_graph_and_comp(G)
+
+    
+
+    # Branching Scheme
+    # while True:
+    #     G = erdos_renyi_graph(7, 0.5)
+    #     BYMethod = BYBScheme()
+    #     status = BYMethod.branch_scheme(G, 1)
+    #     if not status: break
 
     # mis_model = MISIP(G)
     # mis_model.optimize()
@@ -79,8 +104,26 @@ def main(argc, argv):
     # print("Final sets:")
     # BYMethod.disp_final_sets()
 
-    GPlot = GraphPlot()
-    GPlot.disp_graph(G)
+    ## Loaded content ...
+
+    # graph_data = nx.to_dict_of_lists(G)
+
+    # with open('graph.json', 'w') as file:
+    #     json.dump(graph_data, file)
+
+    # with open('graph.json', 'r') as file:
+    #     loaded_graph_data = json.load(file)
+
+    # # Rebuild the NetworkX graph from the adjacency list
+    # G_loaded = nx.Graph()
+
+    # # Add edges to the graph from the adjacency list
+    # for node, neighbors in loaded_graph_data.items():
+    #     for neighbor in neighbors:
+    #         G_loaded.add_edge(node, neighbor)
+
+    # GPlot = GraphPlot()
+    # GPlot.disp_graph(G_loaded)
 
     # CMethod = ChordalMethod(nx.complement(G))
     # CMethod.execute_cm()

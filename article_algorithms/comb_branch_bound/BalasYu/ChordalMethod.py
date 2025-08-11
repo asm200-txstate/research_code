@@ -94,10 +94,10 @@ class ChordalMethod:
 
     def find_mtis(self):
         for i in range(len(self.graph_comp.nodes) - 1, -1, -1): 
-            print(f"Index {i}")
-            
+            # print(f"Index {i}")
+
             v = self.choose_vertex()
-            print(f"Chosen vertex: {v+1}")
+            # print(f"Chosen vertex: {v+1}")
 
             isgraph = nx.induced_subgraph(self.graph_comp, list(set(self.T).union([v])))
             if self.is_quasi_simplicial(v, isgraph):
@@ -119,7 +119,7 @@ class ChordalMethod:
                 self.label_dict[u].append(i)
 
     def execute_cm(self):
-    
+
         # if nx.is_connected(self.graph_comp): print("G complement is connected ...\n")
         # else: print("G complement is NOT connected ....")
 
@@ -206,7 +206,14 @@ class ChordalMethod:
         mis_model.optimize()
         final_S = mis_model.opt_soln()
 
+        graph_comp = nx.complement(nx.induced_subgraph(self.graph, self.T))
+
         print(f"\nalpha(G[U]): {len(final_S)} | |S|: {len(self.S)}")
         print(f"Final set T: {self.T}\n")
-    
+        
     def gen_sets(self): return self.U, self.S
+
+    def is_chordal(self): 
+        if self.T != []: return nx.is_chordal(self.graph_comp)
+
+    def T_vertices(self): return self.T

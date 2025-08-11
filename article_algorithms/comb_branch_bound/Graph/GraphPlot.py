@@ -113,5 +113,13 @@ class GraphPlot:
         plt.show()
         return
     
-    # Task: Add a disp_ind_isgraph() method ...
-    # Goal: Help see what's considered the candidate vertex, xi, in not_N(xi)
+    def disp_graph_and_comp(self, G : nx):
+        plt.subplot(1, 2, 1)
+        nx.draw_networkx(G, width=2, node_size=800, font_size=12, font_color='white')
+        plt.title(f"Graph $G$")
+
+        plt.subplot(1, 2, 2)
+        nx.draw_networkx(nx.complement(G), width=2, node_size=800, font_size=12, font_color='white')
+        plt.title(f"Complement $G^c$")
+        
+        plt.show()
