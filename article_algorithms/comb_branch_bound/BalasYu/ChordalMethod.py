@@ -82,26 +82,28 @@ class ChordalMethod:
                             v : int, 
                             graph_t : nx
                             ):
-        # print(f"\nNodes to G[union(T, v)]: {graph_t.nodes}")
+        print(f"\nNodes to G[union(T, v)]: {graph_t.nodes}")
+        print(f"\sigma(T): {self.sigma_t}")
 
-        successor_list = list(set(self.sigma_t).intersection(set(nx.neighbors(graph_t, v))))
-        # print(f"successors({v}) = {successor_list}\n")
+        successor_list = [u for u in self.sigma_t if u in nx.neighbors(graph_t, v)]
+        print(f"successors({v}) = {successor_list}\n")
 
         if successor_list == []: return True
 
         w = successor_list[0]
+        print(f"First successor to {v} is {w}")
         return self.is_adjacent(w, nx.induced_subgraph(graph_t, successor_list))
 
     def find_mtis(self):
         for i in range(len(self.graph_comp.nodes) - 1, -1, -1): 
-            # print(f"Index {i}")
+            print(f"Index {i}")
 
             v = self.choose_vertex()
-            # print(f"Chosen vertex: {v+1}")
+            print(f"Chosen vertex: {v}")
 
             isgraph = nx.induced_subgraph(self.graph_comp, list(set(self.T).union([v])))
             if self.is_quasi_simplicial(v, isgraph):
-                # print(f"Graph is simplicial with {v}, appending to list ...")
+                print(f"Graph is simplicial with {v}, appending to list ...\n")
                 self.T.append(v)
                 self.sigma_t.insert(0, v)
                 # print(f"New T: {self.T}")
@@ -214,6 +216,8 @@ class ChordalMethod:
     def gen_sets(self): return self.U, self.S
 
     def is_chordal(self): 
-        if self.T != []: return nx.is_chordal(self.graph_comp)
+        print(f"Set T: {self.T}")
+        if self.T != []: return nx.is_chordal(nx.induced_subgraph(nx.complement(self.graph), self.T))
+        else: return True
 
     def T_vertices(self): return self.T

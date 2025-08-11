@@ -56,19 +56,15 @@ def main(argc, argv):
 
     # G = erdos_renyi_graph(6, 0.5)
     
-    V = [v for v in range(7)]
-    E = [(0,1), (0,3), (1,4), (1,6),
-         (3,5), (4,5), (4,6)]
-    G = nx.Graph()
-    G.add_nodes_from(V)
-    G.add_edges_from(E)
+    E = [(0,2), (0,5), (0,6), (1,5), (2,3), (2,5), (2,6), (3,4), (3,5), (4,5)]
+    G = nx.Graph(E)
 
-    BYMethod = BYBScheme()
-    status = BYMethod.branch_scheme(G, 1)
+    # BYMethod = BYBScheme()
+    # status = BYMethod.branch_scheme(G, 1)
 
     # Chordal Method
     while True:
-        G = erdos_renyi_graph(7, 0.5)
+        G = erdos_renyi_graph(25, 0.5)
         CM = ChordalMethod(G)
         CM.execute_cm()
         U, S = CM.gen_sets()
@@ -80,14 +76,19 @@ def main(argc, argv):
         if cost_output != len(S): 
             print("a(G[U]) != |S|")
             break
+        else: 
+            print("a(G[U]) == |S|")
+            
         if CM.is_chordal(): 
+            print("\overline{G[T]} is chordal ...")
+        else: 
             print("\overline{G[T]} is not chordal ...")
             break
-
+        
     GPlot = GraphPlot()
     GPlot.disp_graph_and_comp(G)
 
-    
+    # print(f"G Complement Chordal Status: {nx.is_chordal(nx.complement(G))}")
 
     # Branching Scheme
     # while True:
