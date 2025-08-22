@@ -57,7 +57,7 @@ class GraphPlot:
     def disp_graph(self, G : nx): 
         # pos = nx.circular_layout(G, 2)
         # nx.draw_networkx(G, pos, width=2, node_size=800, font_size=12, font_color='white')
-        nx.draw_networkx(G, width=2, node_size=800, font_size=12, font_color='white')
+        nx.draw_networkx(G, width=2, node_size=500, font_size=8, font_weight='bold', font_color='white')
         plt.title(f"Induced Subgraph for $K_{{{len(G.nodes())}}}$")
         plt.show()
 
@@ -93,7 +93,9 @@ class GraphPlot:
     #
     # Return(s): None
     # ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****
-    def disp_isgraph(self, G : nx, Gt : nx): # Before: def disp_ISG(self, U, Et):
+    def disp_isgraph(self, 
+                     G : nx, 
+                     Gt : nx): 
         pos = nx.circular_layout(G, 2)
 
         Vt = Gt.nodes()
@@ -122,4 +124,72 @@ class GraphPlot:
         nx.draw_networkx(nx.complement(G), width=2, node_size=800, font_size=12, font_color='white')
         plt.title(f"Complement $G^c$")
         
+        plt.show()
+
+    def disp_rsf_colors(self, G : nx, F0 : list, F1 : list, R : list):
+        node_list, node_colors = list(G.nodes), []
+
+        for v in node_list: 
+            if v in F0: node_colors.append('red')
+            elif v in F1: node_colors.append('blue')
+            else: node_colors.append('green')
+
+        nx.draw_networkx(G, width=2, node_size=200, font_size=8, font_weight='bold', node_color=node_colors, font_color='white')
+
+        legend_label = [
+            Line2D([0], [0], marker='o', label=r'Neighbor to Simplicial Vertex', markerfacecolor='red', color='black'),
+            Line2D([0], [0], marker='o', label=r'Simplicial Vertex', markerfacecolor='blue', color='black'),
+            Line2D([0], [0], marker='o', label=r'Remaining Vertex', markerfacecolor='green', color='black')
+        ]
+        plt.legend(handles=legend_label, loc='lower left')
+
+        plt.title(f"Final Graph Output")
+        plt.show()
+
+    def vertex_labels_P1(self, 
+                     G : nx,
+                     MIS_S : list,
+                     key_idx : int):
+        node_list, node_colors = list(G.nodes), []
+
+        for v in node_list: 
+            if v in MIS_S: node_colors.append('blue')
+            else: node_colors.append('orange')                  # Remaining Vertices (Ignored)
+
+        nx.draw_networkx(G, width=2, node_size=200, font_size=8, font_weight='bold', node_color=node_colors, font_color='white')
+
+        legend_label = [
+            Line2D([0], [0], marker='o', label=r'MIS Candidate Vertex', markerfacecolor='blue', color='black'),
+            Line2D([0], [0], marker='o', label=r'Remaining Vertex', markerfacecolor='orange', color='black')
+        ]
+        plt.legend(handles=legend_label, loc='lower left')
+
+        plt.title(f"Branch and Bound Scheme - Output (Index {key_idx})")
+        plt.show()
+
+    def vertex_labels_P2(self, 
+                     G : nx,
+                     F0 : list, 
+                     F1 : list,
+                     MIS_S : list,
+                     key_idx : int):
+        node_list, node_colors = list(G.nodes), []
+
+        for v in node_list: 
+            if v in F0: node_colors.append('red')
+            elif v in F1: node_colors.append('blue')
+            elif v in MIS_S: node_colors.append('green')
+            else: node_colors.append('orange')                  # Remaining Vertices (Ignored)
+
+        nx.draw_networkx(G, width=2, node_size=200, font_size=8, font_weight='bold', node_color=node_colors, font_color='white')
+
+        legend_label = [
+            Line2D([0], [0], marker='o', label=r'F0: Neighbor to Simplicial Vertex', markerfacecolor='red', color='black'),
+            Line2D([0], [0], marker='o', label=r'F1: Simplicial Vertex', markerfacecolor='blue', color='black'),
+            Line2D([0], [0], marker='o', label=r'MIS Candidate Vertex', markerfacecolor='green', color='black'),
+            Line2D([0], [0], marker='o', label=r'Remaining Vertex', markerfacecolor='orange', color='black')
+        ]
+        plt.legend(handles=legend_label, loc='lower left')
+
+        plt.title(f"RSF + Branch and Bound Scheme - Output (Index {key_idx})")
         plt.show()

@@ -82,6 +82,7 @@ class RSF:
         
         while True:
             S = self.find_simplicial(G_p)
+            # print(f"Simplicial list {S}")  
             D = self.indepSimplicial(G_p, S)
             
             for v in D:                                 # Update F0 and F1
@@ -97,6 +98,12 @@ class RSF:
             for v in G_p.nodes():
                 if remove[v] == False: R.append(v)
             
+            # print(f"Vertices in G: {list(G_p.nodes)}")
+            V_orig, V_update = list(G_p.nodes), list(G_p.nodes)
+            GPlot = GraphPlot()
+            if V_update != []: 
+                GPlot.disp_rsf_colors(G_p, set(F0).intersection(G_p.nodes), set(F1).intersection(G_p.nodes), V_update)
+
             G_p = nx.induced_subgraph(G_p, R)
             
             if D == []: break

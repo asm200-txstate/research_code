@@ -6,11 +6,24 @@ from .WGreedyMethod import WGMethod
 class BXWBScheme:
     def __init__(self): pass
 
-    def branch_scheme_helper(self, G : nx, W : dict, I : list, X : list, lvl : int):
+    def branch_scheme_helper(self, 
+                             G : nx, 
+                             W : dict, 
+                             I : list, 
+                             X : list, 
+                             lvl : int,
+                             case : int):
 
         WGM = WGMethod(G, W)
         WGM.wg_method()
         U, S = WGM.gen_sets()
+        K_list = WGM.gen_cliques()
+        W_dict = WGM.gen_weights()
+
+        print(f"len(S):      {len(S)}")
+        print(f"len(U):      {len(U)}")
+        print(f"len(K):      {len(K_list)}")
+        print(f"len(W_dict): {len(W_dict)}")
 
         NW_dict = {}                                                   # Neighborhood weight dictionary
         for v in G.nodes:                                              # Order vertices by sum of weights in N(v)
@@ -22,6 +35,8 @@ class BXWBScheme:
 
         VnU = {v : NW_dict[v] for v in G.nodes if v not in U}
         VnU_list = list(dict(sorted(VnU.items(), key = lambda item : item[1])).keys())
+
+        return
 
         for idx, v in enumerate(VnU_list): 
             root = v
@@ -50,10 +65,10 @@ class BXWBScheme:
                 if cond1 and cond2: X.remove(v)
             I.remove(root)
 
-        if VnU_list == []:
-            print("** Final sets!")
-            print(f"I: {I}")
-            print(f"X: {X}")
+        # if VnU_list == []:
+        #     print("Final sets!")
+        #     print(f"I: {I}")
+        #     print(f"X: {X}")
 
-    def branch_scheme(self, G : nx, W : dict): 
-        self.branch_scheme_helper(G, W, [], [], 0)
+    def branch_scheme(self, G : nx, W : dict, case : int): 
+        self.branch_scheme_helper(G, W, [], [], 0, case)

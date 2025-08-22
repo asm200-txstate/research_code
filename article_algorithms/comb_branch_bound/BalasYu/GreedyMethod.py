@@ -47,9 +47,9 @@ class GMethod():
             clique = list(clique)
             K_list[idx] = clique
 
-        print(f"Independent set S: {self.S}")
-        print("Clique List:")
-        for clique in K_list: print(f"Clique: {clique}")
+        # print(f"Independent set S: {self.S}")
+        # print("Clique List:")
+        # for clique in K_list: print(f"Clique: {clique}")
 
         self.U = [v for list in K_list for v in list]
 

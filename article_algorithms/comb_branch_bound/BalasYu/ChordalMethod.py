@@ -82,28 +82,28 @@ class ChordalMethod:
                             v : int, 
                             graph_t : nx
                             ):
-        print(f"\nNodes to G[union(T, v)]: {graph_t.nodes}")
-        print(f"\sigma(T): {self.sigma_t}")
+        # print(f"\nNodes to G[union(T, v)]: {graph_t.nodes}")
+        # print(f"\sigma(T): {self.sigma_t}")
 
         successor_list = [u for u in self.sigma_t if u in nx.neighbors(graph_t, v)]
-        print(f"successors({v}) = {successor_list}\n")
+        # print(f"successors({v}) = {successor_list}\n")
 
         if successor_list == []: return True
 
         w = successor_list[0]
-        print(f"First successor to {v} is {w}")
+        # print(f"First successor to {v} is {w}")
         return self.is_adjacent(w, nx.induced_subgraph(graph_t, successor_list))
 
     def find_mtis(self):
         for i in range(len(self.graph_comp.nodes) - 1, -1, -1): 
-            print(f"Index {i}")
+            # print(f"Index {i}")
 
             v = self.choose_vertex()
-            print(f"Chosen vertex: {v}")
+            # print(f"Chosen vertex: {v}")
 
             isgraph = nx.induced_subgraph(self.graph_comp, list(set(self.T).union([v])))
             if self.is_quasi_simplicial(v, isgraph):
-                print(f"Graph is simplicial with {v}, appending to list ...\n")
+                # print(f"Graph is simplicial with {v}, appending to list ...\n")
                 self.T.append(v)
                 self.sigma_t.insert(0, v)
                 # print(f"New T: {self.T}")
@@ -167,6 +167,7 @@ class ChordalMethod:
         MCC_model = CCIP(Gt, clique_list)
         MCC_model.optimize()
         K = MCC_model.opt_soln()
+        # print(f"Final set K: {K}")
 
         # Step 3.5 P1: Check that \varphi(G[T]) = |S|
 
@@ -183,12 +184,15 @@ class ChordalMethod:
         # Step 4: Append vertices from V\T to the cliques in clique_dict
 
         VnT = list(set(self.graph.nodes).difference(self.T))
+        # print(f"V\T List: {VnT}")
+
         for v in VnT: 
             neighborhood = list(self.graph.neighbors(v))
-            valid = False
             for idx, clique in clique_dict.items():
                 C_set, N_set = set(clique), set(neighborhood) 
-                if C_set.issubset(N_set): clique_dict[idx].append(v) 
+                if C_set.issubset(N_set): 
+                    clique_dict[idx].append(v) 
+                    continue 
         
         # Step 4.5: Store updated cliques from clique_dict to K_hat list
 
@@ -211,12 +215,12 @@ class ChordalMethod:
         graph_comp = nx.complement(nx.induced_subgraph(self.graph, self.T))
 
         print(f"\nalpha(G[U]): {len(final_S)} | |S|: {len(self.S)}")
-        print(f"Final set T: {self.T}\n")
+        # print(f"Final set T: {self.T}\n")
         
     def gen_sets(self): return self.U, self.S
 
     def is_chordal(self): 
-        print(f"Set T: {self.T}")
+        # print(f"Set T: {self.T}")
         if self.T != []: return nx.is_chordal(nx.induced_subgraph(nx.complement(self.graph), self.T))
         else: return True
 

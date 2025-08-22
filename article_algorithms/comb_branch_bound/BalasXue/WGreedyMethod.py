@@ -47,26 +47,26 @@ class WGMethod:
         self.W_list = []
         U_list = []
 
-        print(f"Original Nodes: {list(curr_weights.keys())}")
-        print(f"Original Weights: {list(curr_weights.values())}\n")
+        # print(f"Original Nodes: {list(curr_weights.keys())}")
+        # print(f"Original Weights: {list(curr_weights.values())}\n")
 
         while True:
-            curr_K = self.maximal_clique(curr_vertices)
-            print(f"Current clique: {curr_K}")
+            curr_K = self.maximal_clique(curr_vertices)                 # Step 3: Find the maximal clique Ki to G[Vi]
+            # print(f"Current clique: {curr_K}")
 
-            self.K_list.append(curr_K)                                                           # Appending current K list
+            self.K_list.append(curr_K)                                  # Appending current K list
 
             min_W = sys.maxsize
             for v in curr_K:
-                if min_W > curr_weights[v]: min_W = curr_weights[v]
+                if min_W > curr_weights[v]: min_W = curr_weights[v]     # Step 4: Find the minimum weight of a vertex in the clique Ki
 
-            print(f"Current Sum W_min: {min_w_sum}")
+            # print(f"Current Sum W_min: {min_w_sum}")
 
             min_w_sum += min_W
-            self.W_list.append(min_W)                                                            # Append current min_W to list
+            self.W_list.append(min_W)                                   # Append current min_W to list
             
-            print(f"Curr W: {min_W}")
-            print(f"Curr weights: {curr_weights.copy()}")
+            # print(f"Curr W: {min_W}")
+            # print(f"Curr weights: {curr_weights.copy()}")
 
             weight_update = {}
             for v in curr_vertices:
@@ -79,8 +79,8 @@ class WGMethod:
                 if curr_weights[v] == 0: U.append(v)
                 elif curr_weights[v] > S_weight - min_w_sum: Z.append(v)
             
-            print(f"Current U: {U}")
-            print(f"Current Z: {Z}")
+            # print(f"Current U: {U}")
+            # print(f"Current Z: {Z}")
 
             U_list.append(U)
             
@@ -89,12 +89,12 @@ class WGMethod:
             UZ_union = U_set.union(Z_set)
             curr_vertices = list(V_set.difference(UZ_union))
 
-            print(f"Updated Vertices: {curr_vertices}\n")
+            # print(f"Updated Vertices: {curr_vertices}\n")
 
             curr_idx += 1
             if curr_vertices == [] or curr_idx == 15: break
 
-        print(f"Final index: {curr_idx}")
+        # print(f"Final index: {curr_idx}")
 
         for U in U_list:
             for u in U: self.U.append(u)

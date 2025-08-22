@@ -32,17 +32,13 @@ from BalasXue.WChordalMethod import WCMethod
 
 class BYBScheme:
     def __init__(self):
-        self.timer = 15                                     # Pause the output terminal
         self.VnU_index = -1
         self.VnU_S_set = []                                 # Base VnU set
 
-        self.base_S = []
+        self.base_S = []                                    # Base independent set S on the root case. 
         self.mis_collection = {}                            # The collection of independent sets at level 0 that are maximum independent sets to G[Vi] (See Paper, Paragraph 1 - Page 4)
 
         self.method_case = -1
-    
-        # Level 0 set S: [0, 5, 7, 12, 17, 19]
-        # VnU List: [20, 24, 6, 4, 11, 16]
 
     def branch_scheme_helper(self, 
                             graph : nx, 
@@ -53,13 +49,13 @@ class BYBScheme:
                             lvl_0_idx : int,
                             weight_dict : dict):
         
-        print(f"Graph Vertices: {graph.nodes}")
+        # print(f"Graph Vertices: {graph.nodes}")
 
         if list(graph.nodes) == []: 
             print("Null graph, returning to main ....")
-            print(f"Level 0 vertex: {lvl_0_idx}")
-            print(f"I set: {I_inc_list}")
-            print(f"X set: {X_exc_list}")
+            # print(f"Level 0 vertex: {lvl_0_idx}")
+            # print(f"I set: {I_inc_list}")
+            # print(f"X set: {X_exc_list}")
 
             if lvl_0_idx not in self.mis_collection: self.mis_collection[lvl_0_idx] = I_inc_list
             elif len(self.mis_collection[lvl_0_idx]) < len(I_inc_list): self.mis_collection[lvl_0_idx] = I_inc_list
@@ -73,6 +69,12 @@ class BYBScheme:
             MChordal.execute_cm()
             U, S = MChordal.gen_sets()   
             if curr_lvl == 0: self.base_S = S
+        
+        elif self.method_case == 2: 
+            MGreedy = GMethod(graph)    
+            MGreedy.greedy_cc()
+            U, S = MGreedy.gen_sets()
+            if curr_lvl == 0: self.base_S = S
 
         # Step 2: Sort vertices in V\U - sort techniques will be updated later.
 
@@ -83,9 +85,9 @@ class BYBScheme:
         if VnU_list == []:
             print("Here in the empty case V \ U = [] ...")
             print(f"Level 0 vertex: {lvl_0_idx}")
-            print(f"I set: {I_inc_list}")
-            print(f"X set: {X_exc_list}")
-            print(f"S set: {S}\n")
+            # print(f"I set: {I_inc_list}")
+            # print(f"X set: {X_exc_list}")
+            # print(f"S set: {S}\n")
             # print(f"MIS set: {curr_mis}\n")
 
             output = list(set(I_inc_list).union(S))
@@ -97,7 +99,7 @@ class BYBScheme:
         # Case 2: The set V\U is a nonempty set 
         if curr_lvl == 0:
             print(f"Level 0 set S: {S}")
-            print(f"VnU List: {VnU_list}\n")
+            # print(f"VnU List: {VnU_list}\n")
             self.VnU_S_set = VnU_list
 
         V = list(graph.nodes)
@@ -130,19 +132,19 @@ class BYBScheme:
                 if u in V_local: V_local.remove(u)
 
             # print("\nAfter: ")
-            print(f"V_local: {V_local}")
-            print(f"X_local: {X_local}")
-            print(f"I_local: {I_local}\n")
+            # print(f"V_local: {V_local}")
+            # print(f"X_local: {X_local}")
+            # print(f"I_local: {I_local}\n")
 
             if len(V_local) == 0: 
                 print("Output is going to be empty ...")
-                print(f"Set S: {S}")
+                # print(f"Set S: {S}")
 
             X_exc_list = list(set(X_exc_list).union(X_local))
             I_inc_list = list(set(I_inc_list).union(I_local))
 
-            print(f"X_exc_list: {X_exc_list}")
-            print(f"I_inc_list: {I_inc_list}\n")
+            # print(f"X_exc_list: {X_exc_list}")
+            # print(f"I_inc_list: {I_inc_list}\n")
 
             g_update = nx.induced_subgraph(graph, V_local)
 
@@ -288,29 +290,29 @@ class BYBScheme:
         for v in graph.nodes: weight_dict[v] = randint(0, 10)
 
         self.method_case = case
-
         self.branch_scheme_helper(graph, [], [], [], 0, 0, weight_dict)
+
+    def mis_status(self, graph : nx):
+        if list(graph.nodes) == []: 
+            print("\nNull graph, no such optimal MIS exists ...\n")
+            return
 
         status_list = []
 
         mis_model = MISIP(graph)
         mis_model.optimize()
 
-        print(f"\nSize of Optimal MIS: {mis_model.opt_cost()}")
-        print(f"Base Set: {str(self.base_S):<35} | Length: {len(self.base_S):>5} | Status: {mis_model.opt_cost() == len(self.base_S)}")
-        status_list.append(mis_model.opt_cost() == len(self.base_S))
+        print(f"\nExpected Optimal MIS Size: {mis_model.opt_cost()}\n")
+        print(f"Base Set:  {0:<2}| Length: {len(self.base_S):>5} | Status: {mis_model.opt_cost() == len(self.base_S)}")
         for idx, curr_set in self.mis_collection.items():
-            print(f"Index: {idx:>5} | MIS: {str(curr_set):<25} | Length: {len(curr_set):>5} | Status: {mis_model.opt_cost() == len(curr_set)}")
+            print(f"Index: {idx:>5} | Length: {len(curr_set):>5} | Status: {mis_model.opt_cost() == len(curr_set)}")
             status_list.append(mis_model.opt_cost() == len(curr_set))
-        
-        print(f"\nBase VnU Set (mis_collection keys): {self.VnU_S_set}")
-        
-        if any(status_list): print("\nGood output!")
-        else: print("\nInvalid output ...")
 
-        return any(status_list)
+        status_list.append(mis_model.opt_cost() == len(self.base_S))    # Appending the base case 
 
-    def disp_final_sets(self):
-        print(f"Base Set: {self.base_S}\n")
-        for index, cand_list in self.mis_collection.items():
-            print(f"Index: {index} | Set: {cand_list} | Length: {len(cand_list)}")
+        # Displaying the final outcome to the terminal 
+        if any(status_list): print("\nOptimal MIS set was found\n")
+        else: print("\nOptimal MIS set was not found\n")
+
+    def get_mis_collection(self): 
+        return self.mis_collection

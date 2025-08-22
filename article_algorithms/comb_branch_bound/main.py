@@ -51,44 +51,152 @@ from networkx import erdos_renyi_graph
 import random 
 
 from random import randint
+import pandas as pd
+import numpy as np
+
+def exec_rsf_alg(G):
+    rsf_model = RSF()
+    simp_list = rsf_model.find_simplicial(G)
+    F0, F1 = rsf_model.recursive_simplicial_fixing(G)
+    return F0, F1
+
+def exec_balas_yu_alg(G):
+    BYMethod = BYBScheme()
+    BYMethod.branch_scheme(G, 1)
+    BYMethod.mis_status(G)
+
+    mis_dict = BYMethod.get_mis_collection()
+
+    return mis_dict
+
+def exec_balas_xue_alg(G, W):
+    BXMethod = BXWBScheme()
+    BXMethod.branch_scheme(G, W, 1)
+    pass
+
+def exec_babel_alg():
+    pass
 
 def main(argc, argv):
-
-    # G = erdos_renyi_graph(6, 0.5)
     
-    E = [(0,2), (0,5), (0,6), (1,5), (2,3), (2,5), (2,6), (3,4), (3,5), (4,5)]
-    G = nx.Graph(E)
+    G = erdos_renyi_graph(38, 0.15)
+    W = {}
+    for v in G.nodes: W[v] = randint(0, 10)
 
-    # BYMethod = BYBScheme()
-    # status = BYMethod.branch_scheme(G, 1)
+    # Apply the branching scheme by Balas-Yu (Before Pre-Processing)
+    mis_dict = exec_balas_yu_alg(G)
 
-    # Chordal Method
-    while True:
-        G = erdos_renyi_graph(25, 0.5)
-        CM = ChordalMethod(G)
-        CM.execute_cm()
-        U, S = CM.gen_sets()
+    # # Display the output of the algorithm - Balas & Yu Branching Scheme 
+    # for key, curr_mis_list in mis_dict.items():
+    #     GPlot = GraphPlot()
+    #     GPlot.vertex_labels_P1(G, curr_mis_list, key) 
 
-        mis_model = MISIP(nx.induced_subgraph(G, U))
-        mis_model.optimize()
-        cost_output = mis_model.opt_cost()
+    # Apply the pre-processing algorithm 
+    F0, F1 = exec_rsf_alg(G)
+    print(f"F0 Set - Length: {len(F0)}")
+    print(f"F1 Set - Length: {len(F1)}\n")  
+
+    isgraph = nx.induced_subgraph(G, list(set(G.nodes).difference(set(F1).union(F0))))
     
-        if cost_output != len(S): 
-            print("a(G[U]) != |S|")
-            break
-        else: 
-            print("a(G[U]) == |S|")
-            
-        if CM.is_chordal(): 
-            print("\overline{G[T]} is chordal ...")
-        else: 
-            print("\overline{G[T]} is not chordal ...")
-            break
-        
+    # Apply the branching scheme by Balas-Yu (After Pre-Processing)
+    mis_dict = exec_balas_yu_alg(isgraph)
+
+    # # Display the output of the algorithm - Balas & Yu Branching Scheme 
+    # for key, curr_mis_list in mis_dict.items():
+    #     GPlot = GraphPlot()
+    #     GPlot.vertex_labels_P2(G, F0, F1, curr_mis_list, key)
+
+    # Apply the weighted branching scheme by Balas-Xue (Pre-processing doesn't apply here). 
+    exec_balas_xue_alg(G, W)
+
+    # *****************************************************************
+
+    # F0, F1 = exec_rsf_alg(G)
+    # print(f"F0 Set - Length: {len(F0)}")
+    # print(f"F1 Set - Length: {len(F1)}\n")  
+
+    # isgraph = nx.induced_subgraph(G, list(set(G.nodes).difference(set(F1).union(F0))))
+    # mis_list = exec_balas_yu_alg(isgraph)
+
+    # for key, curr_mis_list in mis_dict.items():
+    #     GPlot = GraphPlot()
+    #     GPlot.vertex_labels_P2(G, F0, F1, curr_mis_list, key) 
+
+    # *****************************************************************
+
+    return
+
+    print("Without using the RSF Model ...\n")
+
+    BYMethod = BYBScheme()
+    status = BYMethod.branch_scheme(G, 1)
+
+    print("\nUsing the RSF Model ...\n")
+
+    rsf_model = RSF()
+    simp_list = rsf_model.find_simplicial(G)
+    F0, F1 = rsf_model.recursive_simplicial_fixing(G)
+    # print(f"O entries: {F0}")
+    # print(f"1 entries: {F1}")
+
+    print(f"Simplicial Vertices: {simp_list}\n")
+    print(f"Length |V|: {len(G.nodes)}")
+    print(f"Length |F0|: {len(F0)}")
+    print(f"Length |F1|: {len(F1)}")
+
+    node_list = set(list(G.nodes)).difference(set(F0).union(F1))
+    ISG = nx.induced_subgraph(G, node_list)
+
+    # G = nx.florentine_families_graph()
+    BYMethod = BYBScheme()
+    status = BYMethod.branch_scheme(ISG, 1)
+    # if not status: print("******************** Invalid output ...")
+    # else: print("******************** Good output!")
+
+    print(f"\nLength |V|: {len(ISG.nodes)}")
+    print(f"Length |F0|: {len(F0)}")
+    print(f"Length |F1|: {len(F1)}")
+    print(f"Vertices in F1: {F1}")
+
+    V_orig, V_update = list(G.nodes), list(G.nodes)
+    for v in V_orig:
+        if v in F0 or v in F1: V_update.remove(v)
+
+    mis_model = MISIP(G)
+    mis_model.optimize()
+    print(f"Optimal solution on original G: {mis_model.opt_cost()}")
+
     GPlot = GraphPlot()
-    GPlot.disp_graph_and_comp(G)
+    GPlot.disp_rsf_colors(G, F0, F1, V_update)
 
-    # print(f"G Complement Chordal Status: {nx.is_chordal(nx.complement(G))}")
+    # *****************************************************************
+
+    # # Chordal Method - Debugging
+    # while True:
+    #     G = erdos_renyi_graph(8, 0.5)
+    #     CM = ChordalMethod(G)
+    #     CM.execute_cm()
+    #     U, S = CM.gen_sets()
+
+    #     mis_model = MISIP(nx.induced_subgraph(G, U))
+    #     mis_model.optimize()
+    #     cost_output = mis_model.opt_cost()
+    
+    #     if cost_output != len(S): 
+    #         print("a(G[U]) != |S|")
+    #         break
+    #     else: print("a(G[U]) == |S|")
+
+    #     if CM.is_chordal(): print("\overline{G[T]} is chordal ...")
+
+    #     else: 
+    #         print("\overline{G[T]} is not chordal ...")
+    #         break
+        
+    # GPlot = GraphPlot()
+    # GPlot.disp_graph_and_comp(G)
+
+    # ********************************************************************************
 
     # Branching Scheme
     # while True:
@@ -108,7 +216,6 @@ def main(argc, argv):
     ## Loaded content ...
 
     # graph_data = nx.to_dict_of_lists(G)
-
     # with open('graph.json', 'w') as file:
     #     json.dump(graph_data, file)
 
