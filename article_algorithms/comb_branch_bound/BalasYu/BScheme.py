@@ -52,7 +52,7 @@ class BYBScheme:
         # print(f"Graph Vertices: {graph.nodes}")
 
         if list(graph.nodes) == []: 
-            print("Null graph, returning to main ....")
+            print("Null graph, returning ....")
             # print(f"Level 0 vertex: {lvl_0_idx}")
             # print(f"I set: {I_inc_list}")
             # print(f"X set: {X_exc_list}")
@@ -98,7 +98,7 @@ class BYBScheme:
 
         # Case 2: The set V\U is a nonempty set 
         if curr_lvl == 0:
-            print(f"Level 0 set S: {S}")
+            # print(f"Level 0 set S: {S}")
             # print(f"VnU List: {VnU_list}\n")
             self.VnU_S_set = VnU_list
 
@@ -110,7 +110,7 @@ class BYBScheme:
             print(f"Index: {idx} - Node: {VnU_list[idx]}\n")
 
             if curr_lvl == 0: 
-                lvl_0_idx = VnU_list[idx]                                         # Track the index and it's largest independent set (so far). 
+                lvl_0_idx = VnU_list[idx]                               # Track the index and it's largest independent set (so far). 
                 curr_mis = [VnU_list[idx]]
                 # self.mis_collection[lvl_0_idx] = [idx]                # Make a base set when starting, update later when finding a larger set. 
 
@@ -303,7 +303,7 @@ class BYBScheme:
         mis_model.optimize()
 
         print(f"\nExpected Optimal MIS Size: {mis_model.opt_cost()}\n")
-        print(f"Base Set:  {0:<2}| Length: {len(self.base_S):>5} | Status: {mis_model.opt_cost() == len(self.base_S)}")
+        print(f"Base Set     | Length: {len(self.base_S):>5} | Status: {mis_model.opt_cost() == len(self.base_S)}")
         for idx, curr_set in self.mis_collection.items():
             print(f"Index: {idx:>5} | Length: {len(curr_set):>5} | Status: {mis_model.opt_cost() == len(curr_set)}")
             status_list.append(mis_model.opt_cost() == len(curr_set))
@@ -314,5 +314,4 @@ class BYBScheme:
         if any(status_list): print("\nOptimal MIS set was found\n")
         else: print("\nOptimal MIS set was not found\n")
 
-    def get_mis_collection(self): 
-        return self.mis_collection
+    def get_mis_collection(self): return self.mis_collection

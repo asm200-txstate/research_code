@@ -54,6 +54,8 @@ from random import randint
 import pandas as pd
 import numpy as np
 
+from scipy.io import mmread
+
 def exec_rsf_alg(G):
     rsf_model = RSF()
     simp_list = rsf_model.find_simplicial(G)
@@ -72,19 +74,50 @@ def exec_balas_yu_alg(G):
 def exec_balas_xue_alg(G, W):
     BXMethod = BXWBScheme()
     BXMethod.branch_scheme(G, W, 1)
-    pass
+
+    wmis_dict = BXMethod.get_mis_collection()
+    
+    return wmis_dict
 
 def exec_babel_alg():
     pass
 
 def main(argc, argv):
     
-    G = erdos_renyi_graph(38, 0.15)
-    W = {}
-    for v in G.nodes: W[v] = randint(0, 10)
+    edges = []
+    with open('./DIMACS_edges/c-fat200-2.mtx', 'r') as f:
+        f.readline()
+        entry_pass = False
+        for line in f:
+            if entry_pass == False:         # Skipping the first line in the .mxt file 
+                entry_pass = True
+                continue
+            parts = line.strip().split()
+            if len(parts) == 2:             # Each edge should have two values (node1, node2)
+                node1, node2 = map(int, parts)
+                edges.append((node1, node2))
 
-    # Apply the branching scheme by Balas-Yu (Before Pre-Processing)
-    mis_dict = exec_balas_yu_alg(G)
+    G = nx.Graph()
+    G.add_edges_from(edges)
+
+    print(f"# of nodes: {len(G.nodes)}")
+    print(f"# of edges: {len(G.edges)}")
+
+    # cliques = nx.find_cliques(G)
+    # max_clique = []
+    # for clique in cliques: 
+    #     if len(clique) > len(max_clique): max_clique = clique
+
+    # print(f"largest clique length: {len(max_clique)}")
+
+    #G = erdos_renyi_graph(40, 0.2)              # Defining the graph G.
+    W = {}
+    for v in G.nodes: W[v] = randint(0, 10)     # Defining the weights to the graph G.
+
+    # # Apply the branching scheme by Balas-Yu (Before Pre-Processing)
+    # mis_dict = exec_balas_yu_alg(G)
+
+    # print("Before preprocessing ...\n")
 
     # # Display the output of the algorithm - Balas & Yu Branching Scheme 
     # for key, curr_mis_list in mis_dict.items():
@@ -107,7 +140,11 @@ def main(argc, argv):
     #     GPlot.vertex_labels_P2(G, F0, F1, curr_mis_list, key)
 
     # Apply the weighted branching scheme by Balas-Xue (Pre-processing doesn't apply here). 
-    exec_balas_xue_alg(G, W)
+    wmis_dict = exec_balas_xue_alg(G, W)
+
+    print("\nHere in the end ...")
+
+
 
     # *****************************************************************
 
