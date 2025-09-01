@@ -221,6 +221,11 @@ class ChordalMethod:
 
     def is_chordal(self): 
         # print(f"Set T: {self.T}")
+
+        # print("Displaying the induced subgraph ...")
+        # GPlot = GraphPlot()
+        # GPlot.disp_graph(nx.induced_subgraph(self.graph, self.T))
+
         if self.T != []: return nx.is_chordal(nx.induced_subgraph(nx.complement(self.graph), self.T))
         else: return True
 

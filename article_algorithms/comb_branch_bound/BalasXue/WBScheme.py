@@ -3,6 +3,7 @@ import networkx as nx
 
 from .WMISIP import WMISIP
 from .WGreedyMethod import WGMethod
+from .WChordalMethod import WCMethod
 
 from BalasYu.MISIP import MISIP
 
@@ -30,17 +31,31 @@ class BXWBScheme:
         # find U \subset V such that alpha(G[U]) <= |S|.
 
         if case == 1:
+            print("Executing: Weighted Greedy Method ...\n")
             WGM = WGMethod(graph, weight_dict)
             WGM.wg_method()
             U, S = WGM.gen_sets()
             K_list = WGM.gen_cliques()
             W_dict = WGM.gen_weights()
-        else: print("Execute the weighted chordal method ...")
+        else: 
+            print("Executing: Weighted Chordal Method ...\n")
+            WCM = WCMethod(graph, weight_dict)
+            WCM.wc_method()
+            U, S = WCM.gen_sets()
+            K_list = WCM.gen_cliques()
+            W_dict = WCM.gen_clique_weights()
 
-        print(f"len(S):      {len(S)}")
-        print(f"len(U):      {len(U)}")
-        print(f"len(K):      {len(K_list)}")
-        print(f"len(W_dict): {len(W_dict)}")
+            # for idx in range(len(K_list)):
+            #     print(f"K_list: {K_list[idx]}")
+            #     print(f"W_dict: {W_dict[idx]}\n")
+
+            # Task: Generate a method where you return the new cliques and the respective weights. 
+            # return
+
+        # print(f"len(S):      {len(S)}")
+        # print(f"len(U):      {len(U)}")
+        # print(f"len(K):      {len(K_list)}")
+        # print(f"len(W_dict): {len(W_dict)}")
 
         wmis_model = WMISIP(nx.induced_subgraph(graph, U), weight_dict)
         wmis_model.optimize()
@@ -62,7 +77,6 @@ class BXWBScheme:
             NW_dict[v] = N_weight
 
         # Step 2: Sort vertices in V\U
-
         VnU = {v : NW_dict[v] for v in graph.nodes if v not in U}
         VnU_list = list(dict(sorted(VnU.items(), key = lambda item : item[1])).keys())
 
@@ -90,8 +104,7 @@ class BXWBScheme:
         V = list(graph.nodes)
         if V == []: print("Here in a null graph ...\n")
 
-        # Execute the branch and bound scheme similar to the Balas & Yu algorithm. 
-
+        # Step 3: Execute the branch and bound scheme similar to the Balas & Yu algorithm. 
         for idx, v in enumerate(VnU_list):
             print(f"Index: {idx} - Node: {v}\n")
 
@@ -112,7 +125,7 @@ class BXWBScheme:
             for u in IXlocal_union:
                 if u in V_local: V_local.remove(u)
 
-            if len(V_local) == 0: print("Output is going to be empty ...")
+            # if len(V_local) == 0: print("Output is going to be empty ...\n")
 
             X_exc_list = list(set(X_exc_list).union(X_local))
             I_inc_list = list(set(I_inc_list).union(I_local))
@@ -128,33 +141,6 @@ class BXWBScheme:
             I_inc_list = list(set(I_inc_list).difference(I_local))
 
         return
-
-        for idx, v in enumerate(VnU_list): 
-            root = v
-            # print(f"Current root: {v}, Index: {idx}")
-
-            Xj_tilde, not_N = [], list(nx.non_neighbors(G, v))                      
-            for jdx in range(idx): Xj_tilde.append(VnU_list[jdx])                      # Xj_tilde := {xj : j < i}
-
-            Vi = not_N.copy()
-            for v in Xj_tilde:
-                if v in not_N: Vi.remove(v)
-
-            for v in list(G.nodes):                                                    # Append current X and I candidates (Backtracking P-1)
-                cond1, cond2 = v not in Vi, v is not root
-                if cond1 and cond2: X.append(v)
-            I.append(root)
-
-            Gt = nx.induced_subgraph(G, Vi)                                            # Make an induces subgraph on Vis
-
-            lvl += 1                                                                  
-            self.branch_scheme_helper(Gt, W, I, X, lvl)                                # Call recursive case on ISG of G, I, X (Update level entry - Backtracking P-1.5)
-            lvl -= 1
-
-            for v in list(G.nodes):                                                    # Remove current X and I candidates (Backtracking P-2)
-                cond1, cond2 = v not in Vi, v is not root
-                if cond1 and cond2: X.remove(v)
-            I.remove(root)
 
     def branch_scheme(self, G : nx, W : dict, case : int): 
         # self.branch_scheme_helper(G, W, [], [], 0, case)

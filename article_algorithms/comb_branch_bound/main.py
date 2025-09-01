@@ -45,9 +45,9 @@ from SafeColor.wcc_heuristic import wcc_generator
 
 from Max_WC.max_weight_cover import max_wc
 
+from networkx import erdos_renyi_graph
 from itertools import combinations
 import networkx as nx
-from networkx import erdos_renyi_graph
 import random 
 
 from random import randint
@@ -64,7 +64,7 @@ def exec_rsf_alg(G):
 
 def exec_balas_yu_alg(G):
     BYMethod = BYBScheme()
-    BYMethod.branch_scheme(G, 1)
+    BYMethod.branch_scheme(G, 2)
     BYMethod.mis_status(G)
 
     mis_dict = BYMethod.get_mis_collection()
@@ -73,7 +73,7 @@ def exec_balas_yu_alg(G):
 
 def exec_balas_xue_alg(G, W):
     BXMethod = BXWBScheme()
-    BXMethod.branch_scheme(G, W, 1)
+    BXMethod.branch_scheme(G, W, 2)
 
     wmis_dict = BXMethod.get_mis_collection()
     
@@ -84,55 +84,49 @@ def exec_babel_alg():
 
 def main(argc, argv):
     
-    edges = []
-    with open('./DIMACS_edges/c-fat200-2.mtx', 'r') as f:
-        f.readline()
-        entry_pass = False
-        for line in f:
-            if entry_pass == False:         # Skipping the first line in the .mxt file 
-                entry_pass = True
-                continue
-            parts = line.strip().split()
-            if len(parts) == 2:             # Each edge should have two values (node1, node2)
-                node1, node2 = map(int, parts)
-                edges.append((node1, node2))
+    # Defining a graph G based on a sample DIMACS graph.
 
+    # edges = []
+    # with open('./DIMACS_edges/c-fat200-2.mtx', 'r') as f:
+    #     f.readline()
+    #     entry_pass = False
+    #     for line in f:
+    #         if entry_pass == False:         # Skipping the first line in the .mxt file 
+    #             entry_pass = True
+    #             continue
+    #         parts = line.strip().split()
+    #         if len(parts) == 2:             # Each edge should have two values (node1, node2)
+    #             node1, node2 = map(int, parts)
+    #             edges.append((node1, node2))
+    # G = nx.Graph()
+    # G.add_edges_from(edges)
+
+    E = [(6,0), (0,4), (4,1), (1,2), (2,5), (1,7), (5,3), (7,3), (0,7), (5,4), (5,0)]
     G = nx.Graph()
-    G.add_edges_from(edges)
+    G.add_edges_from(E)
+
+    GPlot = GraphPlot()
+    GPlot.disp_graph(G)
+
+    # G = nx.erdos_renyi_graph(25, 0.25)
 
     print(f"# of nodes: {len(G.nodes)}")
     print(f"# of edges: {len(G.edges)}")
 
-    # cliques = nx.find_cliques(G)
-    # max_clique = []
-    # for clique in cliques: 
-    #     if len(clique) > len(max_clique): max_clique = clique
-
-    # print(f"largest clique length: {len(max_clique)}")
-
-    #G = erdos_renyi_graph(40, 0.2)              # Defining the graph G.
+    # Defining the weights to the graph G.
     W = {}
-    for v in G.nodes: W[v] = randint(0, 10)     # Defining the weights to the graph G.
+    for v in G.nodes: 
+        W[v] = randint(0, 10) 
+        # print(f"Vertex: {v} - Weight: {W[v]}") 
 
-    # # Apply the branching scheme by Balas-Yu (Before Pre-Processing)
-    # mis_dict = exec_balas_yu_alg(G)
-
-    # print("Before preprocessing ...\n")
-
-    # # Display the output of the algorithm - Balas & Yu Branching Scheme 
-    # for key, curr_mis_list in mis_dict.items():
-    #     GPlot = GraphPlot()
-    #     GPlot.vertex_labels_P1(G, curr_mis_list, key) 
-
-    # Apply the pre-processing algorithm 
-    F0, F1 = exec_rsf_alg(G)
-    print(f"F0 Set - Length: {len(F0)}")
-    print(f"F1 Set - Length: {len(F1)}\n")  
-
-    isgraph = nx.induced_subgraph(G, list(set(G.nodes).difference(set(F1).union(F0))))
+    # # Apply the pre-processing algorithm.
+    # F0, F1 = exec_rsf_alg(G)
+    # print(f"F0 Set - Length: {len(F0)}")
+    # print(f"F1 Set - Length: {len(F1)}\n")  
+    # isgraph = nx.induced_subgraph(G, list(set(G.nodes).difference(set(F1).union(F0))))
     
     # Apply the branching scheme by Balas-Yu (After Pre-Processing)
-    mis_dict = exec_balas_yu_alg(isgraph)
+    mis_dict = exec_balas_yu_alg(G)
 
     # # Display the output of the algorithm - Balas & Yu Branching Scheme 
     # for key, curr_mis_list in mis_dict.items():
@@ -142,9 +136,18 @@ def main(argc, argv):
     # Apply the weighted branching scheme by Balas-Xue (Pre-processing doesn't apply here). 
     wmis_dict = exec_balas_xue_alg(G, W)
 
-    print("\nHere in the end ...")
+    # ## Sanity Check - Display the output in the end, check that the output is correct. 
+    # wmis_model = WMISIP(G, W)
+    # wmis_model.optimize()
+    # print(f"\nExpected weight: {wmis_model.opt_cost()}\n")
+    # print(f"Candidate Output(s):")
+    # for idx, w_list in wmis_dict.items():
+    #     cost = 0
+    #     for v in w_list: cost = cost + W[v]
+    #     print(f"List {idx}: {cost}")
 
-
+    # GPlot = GraphPlot()
+    # GPlot.disp_weight_graph(G, W)
 
     # *****************************************************************
 

@@ -28,7 +28,7 @@ from .CCIP import CCIP
 from .GreedyMethod import GMethod
 from .ChordalMethod import ChordalMethod
 
-from BalasXue.WChordalMethod import WCMethod
+from Graph.GraphPlot import GraphPlot 
 
 class BYBScheme:
     def __init__(self):
@@ -67,6 +67,15 @@ class BYBScheme:
         if self.method_case == 1: 
             MChordal = ChordalMethod(graph)                                                                    
             MChordal.execute_cm()
+
+            # # MChordal.is_chordal()
+            # print(f"Chordal Status: {MChordal.is_chordal()}")
+            T = MChordal.T_vertices()
+            print(f"T Vertices: {T}")
+            # isg_T = nx.induced_subgraph(graph, T)
+            # GPlot = GraphPlot()
+            # GPlot.disp_graph(isg_T)
+
             U, S = MChordal.gen_sets()   
             if curr_lvl == 0: self.base_S = S
         
@@ -103,8 +112,7 @@ class BYBScheme:
             self.VnU_S_set = VnU_list
 
         V = list(graph.nodes)
-        if V == []:
-            print("Here in a null graph ...\n")
+        if V == []: print("Here in a null graph ...\n")
 
         for idx in range(len(VnU_list)):
             print(f"Index: {idx} - Node: {VnU_list[idx]}\n")
@@ -282,7 +290,7 @@ class BYBScheme:
             time.sleep(self.timer)                                                        # Pause terminal - meant to debug code / read terminal
 
         return
-    
+
     def branch_scheme(self, 
                       graph : nx, 
                       case : int):

@@ -32,7 +32,7 @@ class WMISIP:
         for soln, v in zip(x, self.model.getVars()):
             if v.X == 1: 
                 self.soln.append(soln)
-                self.cost = self.cost + 1
+                self.cost = self.cost + self.weights[soln]
                 
     def opt_cost(self): return self.cost
 

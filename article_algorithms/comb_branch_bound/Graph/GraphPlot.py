@@ -77,7 +77,7 @@ class GraphPlot:
     def disp_weight_graph(self, G : nx, W : dict):
         pos = nx.circular_layout(G, 2)
         node_label = {v : f"V: {v} \nW: {W[v]}" for v in G.nodes}
-        nx.draw_networkx(G, pos, width=2, node_size=1400, font_size=8, font_color='white', labels=node_label, with_labels=True, font_weight='bold') 
+        nx.draw_networkx(G, pos, width=2, node_size=850, font_size=8, font_color='white', labels=node_label, with_labels=True, font_weight='bold') 
         plt.title(f"Induced Subgraph for $K_{{{len(G.nodes())}}}$")
         plt.show()
 
