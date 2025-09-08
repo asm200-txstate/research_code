@@ -10,7 +10,7 @@ from .WMCCIP import WMCCIP
 from Graph.GraphPlot import GraphPlot
 
 from BalasYu.RecSimpFix import RSF
-from BalasYu.ChordalMethod import ChordalMethod
+from BalasYu.ChordalMethod import CMethod
 
 class WCMethod:
     def __init__(self, G : nx, W : dict):
@@ -23,7 +23,7 @@ class WCMethod:
 
     def wc_method(self): 
         ## Step 1: Find a vertex-maximal induced subgraph such that \overline{G}[T] is chordal.
-        CM_model = ChordalMethod(self.graph)
+        CM_model = CMethod(self.graph)
         CM_model.find_mtis()
         T = CM_model.T_vertices()
 

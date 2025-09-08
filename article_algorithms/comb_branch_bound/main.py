@@ -30,7 +30,7 @@ from BalasYu.RecSimpFix import RSF
 from BalasYu.CCIP import CCIP
 from BalasYu.BScheme import BYBScheme                                           ## Access the class to perform the branch and bound algorithm
 from BalasYu.MISIP import MISIP
-from BalasYu.ChordalMethod import ChordalMethod
+from BalasYu.ChordalMethod import CMethod
 
 from BalasXue.WBScheme import BXWBScheme                                        ## Access the class to perform the weighted branch and bound algorithm 
 from BalasXue.WGreedyMethod import WGMethod
@@ -51,10 +51,7 @@ import networkx as nx
 import random 
 
 from random import randint
-import pandas as pd
 import numpy as np
-
-from scipy.io import mmread
 
 def exec_rsf_alg(G):
     rsf_model = RSF()
@@ -64,20 +61,13 @@ def exec_rsf_alg(G):
 
 def exec_balas_yu_alg(G):
     BYMethod = BYBScheme()
-    BYMethod.branch_scheme(G, 2)
-    BYMethod.mis_status(G)
-
-    mis_dict = BYMethod.get_mis_collection()
-
-    return mis_dict
+    mis_output = BYMethod.branch_scheme(G, 2)
+    return mis_output
 
 def exec_balas_xue_alg(G, W):
     BXMethod = BXWBScheme()
     wmis_output = BXMethod.branch_scheme(G, W, 1)
     return wmis_output
-
-    # wmis_dict = BXMethod.get_wmis_collection()    
-    # return wmis_dict
 
 def exec_babel_alg():
     pass
@@ -90,17 +80,17 @@ def main(argc, argv):
     count, limit = 0, 500
     while True:
         W = {}
-        for v in G.nodes: W[v] = 1# randint(1, 10) 
+        for v in G.nodes: W[v] = 1 # randint(1, 10) 
     
-        opt_wmis = exec_balas_xue_alg(G, W)
+        opt_mis = exec_balas_yu_alg(G)
         total_weight = 0
-        for v in opt_wmis:
-            total_weight = total_weight + W[v]
+        for v in opt_mis:
+            total_weight = total_weight + 1
 
-        wmis_model = WMISIP(G, W)
-        wmis_model.optimize()
+        mis_model = MISIP(G)
+        mis_model.optimize()
 
-        if total_weight == wmis_model.opt_cost(): 
+        if total_weight == mis_model.opt_cost(): 
             count = count + 1
             print(f"{count} of the {limit}: Success!")
         else: 
@@ -112,13 +102,13 @@ def main(argc, argv):
             break
 
     if count < limit:
-        print(f"Expected Output:  {wmis_model.opt_soln()}")
-        print(f"Branching Output: {opt_wmis}\n")
+        print(f"Expected Output:  {mis_model.opt_soln()}")
+        print(f"Branching Output: {opt_mis}\n")
 
-        print(f"Expected Weight:  {wmis_model.opt_cost()}")
+        print(f"Expected Weight:  {mis_model.opt_cost()}")
         print(f"Branching Weight: {total_weight}\n")
 
-        A, B = opt_wmis, wmis_model.opt_soln()
+        A, B = opt_mis, mis_model.opt_soln()
         AnB, BnA = [], []
 
         for v in A:
