@@ -96,13 +96,13 @@ class GraphPlot:
     def disp_isgraph(self, 
                      G : nx, 
                      Gt : nx): 
-        pos = nx.circular_layout(G, 2)
+        pos = nx.spring_layout(G, 2)
 
         Vt = Gt.nodes()
         Et = Gt.edges()
 
-        args = {"node_size" : 800}
-        nx.draw_networkx(G, pos, width=3, font_size=18, font_color="white", **args)
+        args = {"node_size" : 600}
+        nx.draw_networkx(G, pos, width=3, font_size=14, font_color="white", **args)
         nx.draw_networkx_nodes(G, pos, nodelist=Vt, node_color="tab:red", **args)
         nx.draw_networkx_edges(G, pos, width=3, edgelist=Et, edge_color="tab:red", **args)
 

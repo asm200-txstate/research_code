@@ -7,6 +7,8 @@ from random import choice
 from .WMISIP import WMISIP
 from .WMCCIP import WMCCIP
 
+from Graph.GraphPlot import GraphPlot
+
 from BalasYu.RecSimpFix import RSF
 from BalasYu.ChordalMethod import ChordalMethod
 
@@ -20,18 +22,23 @@ class WCMethod:
         self.U, self.S = None, None
 
     def wc_method(self): 
-        ## Find a vertex-maximal induced subgraph such that \overline{G}[T] is chordal.
+        ## Step 1: Find a vertex-maximal induced subgraph such that \overline{G}[T] is chordal.
         CM_model = ChordalMethod(self.graph)
         CM_model.find_mtis()
         T = CM_model.T_vertices()
 
-        ## Find the maximum independent set S on the induced subgraph G[T].
+        # print(f"G Nodes: {self.graph.nodes}")
+        # print(f"\nT Vertices: {T}")
+
+        ## Step 2: Find the maximum independent set S on the induced subgraph G[T].
         graph_T = nx.induced_subgraph(self.graph, T)
+        graph_comp = nx.complement(self.graph)
+
         wmis_model = WMISIP(graph_T, self.weights)
         wmis_model.optimize()
         self.S = wmis_model.opt_soln()
 
-        ## Create a list of weighted cliques on G[T].
+        ## Step 3.1: Create a list of weighted cliques on G[T].
         clique_list = list(nx.find_cliques(graph_T))
         clique_weights = []
         for C in clique_list:
@@ -39,21 +46,27 @@ class WCMethod:
             for v in C: weight += self.weights[v]
             clique_weights.append(weight)
 
-        ## Find the minimum clique cover to the  
-        wccip_model = WMCCIP(graph_T, clique_weights, clique_list)
-        wccip_model.optimize()
-        min_wcc = wccip_model.opt_soln()
+        # print(f"T: {T}")
+        # print(f"Cliques List: {clique_list}")
+        # print(f"Clique Weights: {clique_weights}\n")
 
-        ## Map an index from 0 - len(min_wcc) to a clique from the induced subgraph G[T]
+        ## Step 3.2: Find the minimum clique cover to the  
+        wmccip_model = WMCCIP(graph_T, clique_weights, clique_list)
+        wmccip_model.optimize()
+        min_wcc = wmccip_model.opt_soln()
+
+        ## Step 3.3: Map an index from 0 - len(min_wcc) to a clique from the induced subgraph G[T]
         min_clique_dict = {}
         for idx, clique in enumerate(min_wcc): min_clique_dict[idx] = list(clique.copy())
 
-        ## Find the vertices that are in V\T
+        ## Step 4.1: Find the vertices that are in V\T
         VnT = []
         for v in self.graph.nodes:
             if v not in T: VnT.append(v)
 
-        ## Greeedily add vertices in V\T to these cliques to generate larger cliques. 
+        # print(f"VnT: {VnT}")     
+
+        ## Step 4.2: Greedily add vertices in V\T to these cliques to generate larger cliques. 
         for v in VnT: 
             neighborhood = list(self.graph.neighbors(v))
             for idx in range(len(min_clique_dict)):
@@ -62,7 +75,7 @@ class WCMethod:
                 if C_set.issubset(N_set): 
                     min_clique_dict[idx].append(v)
         
-        ## Reinitializing the previous clique weights to $K_1, ..., K_{|S|}$ 
+        ## Step 4.3: Reinitializing the previous clique weights to $K_1, ..., K_{|S|}$ 
         ## to the new clique weights $\overline{K}_1, ..., \overline{K}_{|S|}$ 
         clique_weights = []
         for clique in min_clique_dict.values(): 
@@ -74,11 +87,19 @@ class WCMethod:
         self.cliques = list(min_clique_dict.values())
         self.clique_weights = clique_weights
 
-        ## Unionize these sets \hat{K}_{1}, \ldots, \hat{K}_{|S|}  to generate U. 
+        ## Step 4.4: Unionize these sets \hat{K}_{1}, \ldots, \hat{K}_{|S|}  to generate U. 
         U = set()
         for C in clique_list:
             for v in C: U.add(v)
         self.U = list(U)
+
+        wmis_model = WMISIP(self.graph, self.weights)
+        wmis_model.optimize()
+        phi_Uw = wmis_model.opt_cost()
+        
+        wmis_model = WMISIP(nx.induced_subgraph(self.graph, T), self.weights)
+        wmis_model.optimize()
+        phi_Tw = wmis_model.opt_cost()
 
     def gen_sets(self): return self.U, self.S
 

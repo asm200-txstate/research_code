@@ -73,81 +73,83 @@ def exec_balas_yu_alg(G):
 
 def exec_balas_xue_alg(G, W):
     BXMethod = BXWBScheme()
-    BXMethod.branch_scheme(G, W, 2)
+    wmis_output = BXMethod.branch_scheme(G, W, 1)
+    return wmis_output
 
-    wmis_dict = BXMethod.get_mis_collection()
-    
-    return wmis_dict
+    # wmis_dict = BXMethod.get_wmis_collection()    
+    # return wmis_dict
 
 def exec_babel_alg():
     pass
 
 def main(argc, argv):
+
+    G = erdos_renyi_graph(30, 0.5)
+
+    # Weighted branching scheme by Balas-Xue  
+    count, limit = 0, 500
+    while True:
+        W = {}
+        for v in G.nodes: W[v] = 1# randint(1, 10) 
     
-    # Defining a graph G based on a sample DIMACS graph.
+        opt_wmis = exec_balas_xue_alg(G, W)
+        total_weight = 0
+        for v in opt_wmis:
+            total_weight = total_weight + W[v]
 
-    # edges = []
-    # with open('./DIMACS_edges/c-fat200-2.mtx', 'r') as f:
-    #     f.readline()
-    #     entry_pass = False
-    #     for line in f:
-    #         if entry_pass == False:         # Skipping the first line in the .mxt file 
-    #             entry_pass = True
-    #             continue
-    #         parts = line.strip().split()
-    #         if len(parts) == 2:             # Each edge should have two values (node1, node2)
-    #             node1, node2 = map(int, parts)
-    #             edges.append((node1, node2))
-    # G = nx.Graph()
-    # G.add_edges_from(edges)
+        wmis_model = WMISIP(G, W)
+        wmis_model.optimize()
 
-    E = [(6,0), (0,4), (4,1), (1,2), (2,5), (1,7), (5,3), (7,3), (0,7), (5,4), (5,0)]
-    G = nx.Graph()
-    G.add_edges_from(E)
+        if total_weight == wmis_model.opt_cost(): 
+            count = count + 1
+            print(f"{count} of the {limit}: Success!")
+        else: 
+            print(f"{count} of the {limit}: Fail! Terminating at an invalid output ...\n")
+            break
 
-    GPlot = GraphPlot()
-    GPlot.disp_graph(G)
+        if count == limit: 
+            print(f"\nAll {limit} cases have passed! Great job!\n")
+            break
 
-    # G = nx.erdos_renyi_graph(25, 0.25)
+    if count < limit:
+        print(f"Expected Output:  {wmis_model.opt_soln()}")
+        print(f"Branching Output: {opt_wmis}\n")
 
-    print(f"# of nodes: {len(G.nodes)}")
-    print(f"# of edges: {len(G.edges)}")
+        print(f"Expected Weight:  {wmis_model.opt_cost()}")
+        print(f"Branching Weight: {total_weight}\n")
 
-    # Defining the weights to the graph G.
-    W = {}
-    for v in G.nodes: 
-        W[v] = randint(0, 10) 
-        # print(f"Vertex: {v} - Weight: {W[v]}") 
+        A, B = opt_wmis, wmis_model.opt_soln()
+        AnB, BnA = [], []
 
-    # # Apply the pre-processing algorithm.
-    # F0, F1 = exec_rsf_alg(G)
-    # print(f"F0 Set - Length: {len(F0)}")
-    # print(f"F1 Set - Length: {len(F1)}\n")  
-    # isgraph = nx.induced_subgraph(G, list(set(G.nodes).difference(set(F1).union(F0))))
-    
-    # Apply the branching scheme by Balas-Yu (After Pre-Processing)
-    mis_dict = exec_balas_yu_alg(G)
+        for v in A:
+            if v not in B: AnB.append(v)
 
-    # # Display the output of the algorithm - Balas & Yu Branching Scheme 
-    # for key, curr_mis_list in mis_dict.items():
-    #     GPlot = GraphPlot()
-    #     GPlot.vertex_labels_P2(G, F0, F1, curr_mis_list, key)
+        for v in B:
+            if v not in A: BnA.append(v)
 
-    # Apply the weighted branching scheme by Balas-Xue (Pre-processing doesn't apply here). 
-    wmis_dict = exec_balas_xue_alg(G, W)
+        if AnB == []: print("A is a subset of B\n")
+        else:
+            print("A is not a subset of B - Algorithm \ Expected")
+            print(f"Missing entries: {AnB}\n")
+        if BnA == []: print(print("B is a subset of A\n"))
+        else:
+            print("B is not a subset of A - Expected \ Algorithm")
+            print(f"Missing entries: {BnA}\n")
 
-    # ## Sanity Check - Display the output in the end, check that the output is correct. 
-    # wmis_model = WMISIP(G, W)
-    # wmis_model.optimize()
-    # print(f"\nExpected weight: {wmis_model.opt_cost()}\n")
-    # print(f"Candidate Output(s):")
-    # for idx, w_list in wmis_dict.items():
-    #     cost = 0
-    #     for v in w_list: cost = cost + W[v]
-    #     print(f"List {idx}: {cost}")
+        symm_diff = list(set(A).symmetric_difference(B))
+        
+        print(f"Vertices: {G.nodes}")
+        print(f"Edges: {G.edges}")
+        print(f"Weights: {W}")
 
-    # GPlot = GraphPlot()
-    # GPlot.disp_weight_graph(G, W)
+        GPlot = GraphPlot()
+        GPlot.disp_weight_graph(G, W)
+
+    # AB_union = list(set(A).union(B))
+    # v_list = list(set(A).union(B))
+
+    # print(f"v_list: {v_list}")
+    # print(f"AB_union: {AB_union}")
 
     # *****************************************************************
 
@@ -208,197 +210,6 @@ def main(argc, argv):
 
     GPlot = GraphPlot()
     GPlot.disp_rsf_colors(G, F0, F1, V_update)
-
-    # *****************************************************************
-
-    # # Chordal Method - Debugging
-    # while True:
-    #     G = erdos_renyi_graph(8, 0.5)
-    #     CM = ChordalMethod(G)
-    #     CM.execute_cm()
-    #     U, S = CM.gen_sets()
-
-    #     mis_model = MISIP(nx.induced_subgraph(G, U))
-    #     mis_model.optimize()
-    #     cost_output = mis_model.opt_cost()
-    
-    #     if cost_output != len(S): 
-    #         print("a(G[U]) != |S|")
-    #         break
-    #     else: print("a(G[U]) == |S|")
-
-    #     if CM.is_chordal(): print("\overline{G[T]} is chordal ...")
-
-    #     else: 
-    #         print("\overline{G[T]} is not chordal ...")
-    #         break
-        
-    # GPlot = GraphPlot()
-    # GPlot.disp_graph_and_comp(G)
-
-    # ********************************************************************************
-
-    # Branching Scheme
-    # while True:
-    #     G = erdos_renyi_graph(7, 0.5)
-    #     BYMethod = BYBScheme()
-    #     status = BYMethod.branch_scheme(G, 1)
-    #     if not status: break
-
-    # mis_model = MISIP(G)
-    # mis_model.optimize()
-    # print(f"Final Maximum IS: {mis_model.opt_soln()}")
-    # print(f"Final MIS Size: {len(mis_model.opt_soln())}\n")
-
-    # print("Final sets:")
-    # BYMethod.disp_final_sets()
-
-    ## Loaded content ...
-
-    # graph_data = nx.to_dict_of_lists(G)
-    # with open('graph.json', 'w') as file:
-    #     json.dump(graph_data, file)
-
-    # with open('graph.json', 'r') as file:
-    #     loaded_graph_data = json.load(file)
-
-    # # Rebuild the NetworkX graph from the adjacency list
-    # G_loaded = nx.Graph()
-
-    # # Add edges to the graph from the adjacency list
-    # for node, neighbors in loaded_graph_data.items():
-    #     for neighbor in neighbors:
-    #         G_loaded.add_edge(node, neighbor)
-
-    # GPlot = GraphPlot()
-    # GPlot.disp_graph(G_loaded)
-
-    # CMethod = ChordalMethod(nx.complement(G))
-    # CMethod.execute_cm()
-
-    # U, _ = CMethod.gen_sets()
-    # H = nx.induced_subgraph(G, U)
-
-    # cc_model = CCIP(H, list(nx.find_cliques(H))) 
-    # cc_model.optimize()
-    # print(f"Optimal cost: {cc_model.opt_cost()}")
-    # print(f"Optimal soln: {cc_model.opt_soln()}")
-
-    # mis_model = MISIP(H)
-    # mis_model.optimize()
-    # print(f"Optimal cost: {mis_model.opt_cost()}")
-    # print(f"Optimal soln: {mis_model.opt_soln()}")
-
-    # G = nx.complement(nx.cycle_graph(5))
-    # Hhat = nx.complement(G)
-    # print(f"Is Chordal: {nx.is_chordal(Hhat)}")
-
-    # GPlot = GraphPlot()
-    # GPlot.disp_graph(Hhat)
-
-    # print("Cliques in G-complement:")
-    # print("Cliques: ", list(nx.find_cliques(nx.complement(G))))
-
-    # clique_list = list(nx.find_cliques(nx.complement(G)))
-    # for clique in clique_list: 
-    #     print(f"Clique: {clique} - Chordal Status: {nx.is_chordal(nx.induced_subgraph(G, clique))}")
-
-    # GPlot = GraphPlot()
-    # GPlot.disp_graph(nx.complement(G))
-    # # GPlot.disp_isgraph(G, H)
-
-    # BYMethod = BYBScheme()
-    # BYMethod.branch_scheme(G)
-
-    # return
-
-    # W = {}
-    # for v in G.nodes: W[v] = randint(1, 10)
-
-    # BM = BMethod(G, W)
-    # BM.babel_method()
-    # BM.node_elimination()
-    # BM.branching_scheme()
-
-    # GenC = gen_cliques(G)
-
-    # mis_set = set()
-    # GenC.find_mis(mis_set, [], 1)
-
-    # mis_list = []
-    # for curr_list in mis_set: mis_list.append(list(curr_list))
-    # # print(f"MIS List: {mis_list}")
-    # # print(f"MIS List length: {len(mis_list)}")
-
-    # S_prime_set = set()
-    # for clique in mis_list: 
-    #     S_prime_set.add(frozenset(random.choice(mis_list)))
-
-    # S_prime = []
-    # for element in S_prime_set: S_prime.append(list(element))
-
-    # CCIP_dual = dual_ccip(G, S_prime)
-    # CCIP_dual.optimize()
-
-    # opt_cost, vertex_cost, clique_cost = CCIP_dual.opt_cost()
-    # print(f"Optimal Cost: {opt_cost}")
-
-    # soln_vertex, soln_clique = CCIP_dual.opt_soln()
-    # for v in soln_vertex: print(f"Vertex Output: {v}")
-    # for clique in soln_clique: print(f"Clique Output: {clique}")
-
-    # for idx, cost in enumerate(vertex_cost): print(f"Node idx: {idx+1} - {cost}")
-    # for idx, cost in enumerate(clique_cost): print(f"Clique idx: {S_prime[idx]} \t - {cost}")
-
-    # print("")
-    # weighted_cc = max_wc(G, W)
-
-    # temp_dict = {}
-    # for v in G: temp_dict[v] = nx.degree(G, v)
-    # R = list(dict(sorted(temp_dict.items(), key = lambda item : item[1], reverse=True)))
-    
-    # print(f"R: {R}")
-    # weighted_cc.ColorSortWeight(R)
-    # weighted_cc.Expand(R)
-
-    # # weighted_cc.Expand()
-    # # weighted_cc.ColorSortWeight()
-
-    # # seen_dict = {}
-    # # for v in G.nodes: seen_dict[v] = False
-    # # gen_wcc = wcc_generator(G, W, seen_dict)
-    # # gen_wcc.wwc_heuristic()
-    # # gen_wcc.weighted_cliques()
-
-    # # Define the dual variable \pi in the Safe Color notes. 
-    # pi = vertex_cost
-
-    # # print(f"PI Length: {len(pi)} - S_prime Length: {len(S_prime)}")
-    # print(f"PI: {pi}")
-    # print(f"S_prime: {S_prime}")
-
-    # S_hat = []
-    # for clique in mis_list:
-    #     if clique not in S_prime: S_hat.append(clique)
-    
-    # print("Cliques in S_hat := S \ S_prime (where S := mis_list)")
-    # for clique in S_hat: 
-    #     print(f"Clique: {clique}")
-    #     sum = 0
-    #     for v in clique: sum += pi[v-1]
-    #     if sum > 1: print("We hit pi(S) > 1")
-
-    # # GPlot = GraphPlot()
-    # # GPlot.disp_weight_graph(G, W)
-
-    # # # BBStrat = BYBScheme()
-    # # # BBStrat.branch_scheme(G)                        # Find the maximal independent set - apply recursion
-    
-    # # WBBStrat = BXWBScheme()
-    # # WBBStrat.branch_scheme(G, W)
-
-    # # WCM = WCMethod(G, W)
-    # # WCM.wc_method()
     
 if __name__ == "__main__":
     if len(sys.argv) < 2: 
@@ -407,3 +218,6 @@ if __name__ == "__main__":
         # exit()
     
     main(len(sys.argv), sys.argv)
+
+# Expected Output:  [0, 1, 2, 4, 5, 7, 9]
+# Branching Output: [0, 1, 2, 4, 5, 6, 7]

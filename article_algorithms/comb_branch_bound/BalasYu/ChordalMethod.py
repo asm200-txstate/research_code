@@ -104,7 +104,7 @@ class ChordalMethod:
             isgraph = nx.induced_subgraph(self.graph_comp, list(set(self.T).union([v])))
             if self.is_quasi_simplicial(v, isgraph):
                 # print(f"Graph is simplicial with {v}, appending to list ...\n")
-                self.T.append(v)
+                if v not in self.T: self.T.append(v)
                 self.sigma_t.insert(0, v)
                 # print(f"New T: {self.T}")
                 # print(f"New Sigma_T: {self.sigma_t}\n")
