@@ -35,6 +35,7 @@ from BalasXue.WMISIP import WMISIP
 from Babel.BabelMethod import BWCCMethod
 
 from networkx import erdos_renyi_graph
+from scipy.io import mmread
 import networkx as nx
 import numpy as np
 import random 
@@ -62,11 +63,16 @@ def exec_babel_alg(G, W):
 
 def main(argc, argv):
 
-    G = erdos_renyi_graph(25, 0.5)
+    G = erdos_renyi_graph(30, 0.5)
+
+    # # sparse_matrix = mmread("./DIMACS_graphs/c-fat200-1.mtx")
+    # # G = nx.Graph(sparse_matrix)
+
+    print("Executing the Balas-Yu Branching Scheme\n")
 
     # Un-weighted Branching Scheme by Balas-Yu
     tol = 1e-8
-    count, limit = 0, 5
+    count, limit = 0, 10
 
     while True:
         opt_mis = exec_balas_yu_alg(G)
@@ -79,14 +85,14 @@ def main(argc, argv):
 
         if total_sum == mis_model.opt_cost(): 
             count = count + 1
-            print(f"{count} of the {limit}: Success!")
+            print(f"Case {count} / {limit}: Success!")
         else: 
-            print(f"{count} of the {limit}: Fail! Terminating at an invalid output ...\n")
+            print(f"Case {count} / {limit}: Fail! Terminating at an invalid output ...\n")
             break
 
         if count == limit: 
             print(f"\nAll {limit} cases have passed! Great job!\n")
-            break
+            break 
 
     if count < limit:
         print(f"Expected Output:  {mis_model.opt_soln()}")
@@ -121,9 +127,11 @@ def main(argc, argv):
         GPlot = GraphPlot()
         GPlot.disp_graph(G)
 
+    print("Executing the Balas-Xue Branching Scheme\n")
+
     # Weighted Branching Scheme by Balas-Xue
     tol = 1e-8
-    count, limit = 0, 5
+    count, limit = 0, 10
     while True:
         W = {}
         for v in G.nodes: W[v] = random.uniform(1.5, 5.5)
@@ -139,9 +147,9 @@ def main(argc, argv):
         A, B = set(wmis_model.opt_soln()), set(opt_wmis)
         if A.issubset(B) and B.issubset(A): 
             count = count + 1
-            print(f"{count} of the {limit}: Success!")
+            print(f"Case {count} / {limit}: Success!")
         else: 
-            print(f"{count} of the {limit}: Fail! Terminating at an invalid output ...\n")
+            print(f"Case {count} / {limit}: Fail! Terminating at an invalid output ...\n")
             break
         
         if count == limit: 
@@ -184,7 +192,7 @@ def main(argc, argv):
 
     # Weighted Clique Cover by Babel 
     W = {}
-    for v in G.nodes: W[v] = random.randint(5, 50)
+    for v in G.nodes: W[v] = random.randint(1, 101)
     exec_babel_alg(G, W) 
     
 if __name__ == "__main__":
