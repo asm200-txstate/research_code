@@ -5,7 +5,8 @@ from .WMISIP import WMISIP
 from .WGreedyMethod import WGMethod
 from .WChordalMethod import WCMethod
 
-from BalasYu.MISIP import MISIP
+from Babel.BabelMethod import BWCCMethod
+import time
 
 class BXWBScheme:
     def __init__(self):
@@ -14,6 +15,7 @@ class BXWBScheme:
 
     def preprocess_sets(self, G, case):
         U, S = [], []
+        rank = []                # Rank for the Babel method (used if case == 3)
 
         if case == 1:
             # print("\nExecuting: Weighted Greedy Method ...\n")
@@ -26,6 +28,13 @@ class BXWBScheme:
             WCM = WCMethod(G, self.W)
             WCM.wc_method()
             U, S = WCM.gen_sets()
+
+        elif case == 3:
+            BM = BWCCMethod(G, self.W)
+            BM.babel_scheme()
+            U, S, rank = BM.gen_outputs()
+
+            # time.sleep(1.5) # Uncomment to debug ...
 
         else: 
             print("Invalid output, error in code ...")
@@ -46,6 +55,8 @@ class BXWBScheme:
         if alpha_Gw > S_weight: 
             print("\nInvalid output, error in code ...")
             sys.exit()
+
+        if case == 3: return U, S, rank
 
         return U, S
     
@@ -73,7 +84,8 @@ class BXWBScheme:
         mis_local = []                              # Collection of maximum independent sets local to a node. 
 
         # Step 1: Find U \subset V such that alpha(G[U]) <= |S|.
-        U, S = self.preprocess_sets(G, case)
+        if case == 3: U, S, rank = self.preprocess_sets(G, case)
+        else: U, S = self.preprocess_sets(G, case)
 
         # Step 2: Arrange vertices in V\U as x1, ..., xn.
         VnU_list = self.arrange_list(G, U)
@@ -82,9 +94,16 @@ class BXWBScheme:
         if len(VnU_list) == 0: return S
         mis_local.append(S)
 
+        S_weight = 0
+        for v in S: S_weight += self.W[v]
+
         for idx, v in enumerate(VnU_list):
             V_local = list(self.generate_neigborhood(G, VnU_list, v))
             G_local = nx.induced_subgraph(G, V_local)
+
+            if case == 3 and S_weight >= rank[v]: 
+                # print("Skipping this case ...\n")
+                continue
 
             self.curr_lvl = self.curr_lvl + 1
 

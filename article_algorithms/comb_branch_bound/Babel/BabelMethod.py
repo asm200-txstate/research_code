@@ -11,6 +11,9 @@ class BWCCMethod:
         self.weights = W
         self.clique_list, self.seen_list = [], []
         self.clique_list = list(nx.find_cliques(self.graph))
+
+        self.U, self.S = [], []
+        self.rank = {}
     
     def compute_GKD(self):
         # self.clique_list = list(nx.find_cliques(self.graph))
@@ -48,6 +51,10 @@ class BWCCMethod:
         final_idx, maximal_found, S = -1, False, []
         mis_cand_list, result_idx = [], -1
 
+        # print(f"Vertices: {self.graph.nodes}")
+        if list(self.graph.nodes) == []: 
+            # print("Empty graph ....")
+            return 
 
         for jdx in range(len(self.graph.nodes)):
             gkd_v = self.compute_GKD()
@@ -84,10 +91,8 @@ class BWCCMethod:
                 # if result_idx != -1: print("Maximal independent set found!\n")
                 # if result_idx != -1: print(f"Great news! Found it! - Index: {result_idx}\n")
                 final_idx = result_idx
-            
-        S = mis_cand_list[result_idx]
-
-        # print("")
+        
+        S = mis_cand_list[final_idx]
     
         V = list(self.graph.nodes)
         for v in V:
@@ -97,8 +102,7 @@ class BWCCMethod:
                 if v in C: 
                     clique_count = clique_count + 1
                     temp_list.append(C)
-            if clique_count < self.weights[v]: 
-                print("Invalid output ...")
+            if clique_count < self.weights[v]: print("Invalid output ...")
             else: pass
 
         # Set of indices where for every v in V, r(v) = {j in [t] : v in Kj}
@@ -122,34 +126,43 @@ class BWCCMethod:
         V_tilde = [k for k, v in sorted(V_dict.items(), key=lambda item: item[1], reverse=True)]
         
         weight_S = 0
-        for v in S: 
-            weight_S = weight_S + self.weights[v]
+        for v in S: weight_S += self.weights[v]
 
-        # Make it to where you're using S instead of U.
-        print(f"w(S) = {weight_S}")
-        rank_weight_idx = -1 # List of indices such that rank[v] > W(s)
+        # Find the list of indices such that rank[v] > W(s)
+        # print(f"w(S) = {weight_S}")
+        rank_weight_idx = -1 
         for idx, s in enumerate(V_tilde):
             # print(f"Rank[{s}]: {rank[s]} - Index: {idx}")
             if rank[s] > weight_S: 
                 # print(f"Rank[{s}]: {rank[s]} - Index: {idx}")
                 rank_weight_idx = idx
 
-        print(f"\nV_tilde Set: {V_tilde}")
-        print(f"Candidate Max Index List: {rank_weight_idx}\n")
+        # print(f"\nV_tilde Set: {V_tilde}")
+        # print(f"Candidate Max Index List: {rank_weight_idx}")
+        # print(f"Rank List: {rank}\n")
 
         v_s = rank_weight_idx # Save the largest index such that rank[s] > weight_S.
-        print(f"Final Index Output (s): {v_s} - (Vertex, Rank) ({V_tilde[v_s]}, {rank[v_s]})") 
-        
-        U = V_tilde[v_s + 1 : len(V_tilde)]
-        print(f"U set (V_tilde from s+1 to n): {U}")
+        # print(f"Final Index Output(s): {v_s} - (Vertex, Rank) ({V_tilde[v_s]}, {rank[V_tilde[v_s]]})")
+
+        if v_s != -1: 
+            U = V_tilde[v_s + 1 : len(V_tilde)]
+            # print(f"U set (V_tilde from s+1 to n): {U}")
+        else: 
+            U = []
+            # print("U is empty as rank <= weight_S for all vertices in V_tilde ...")
 
         isgraph = nx.induced_subgraph(self.graph, U)
         mis_model = WMISIP(isgraph, self.weights)
         mis_model.optimize()
         cost_output = mis_model.opt_cost()
 
-        print(f"\nalpha_w(G[U]): {cost_output}| w(S): {weight_S}")
-        if cost_output <= weight_S: print("Valid output")
+        # print(f"\nalpha_w(G[U]): {cost_output}| w(S): {weight_S}")
+        if cost_output <= weight_S: pass # print("Valid output")
         else: print("Invalid output") 
 
+        self.U, self.S = U, S
+        self.rank = rank
+
         return
+    
+    def gen_outputs(self): return self.U, self.S, self.rank

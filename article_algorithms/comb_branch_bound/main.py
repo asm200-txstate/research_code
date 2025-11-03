@@ -46,27 +46,23 @@ def exec_rsf_alg(G):
     F0, F1 = rsf_model.recursive_simplicial_fixing(G)
     return F0, F1
 
-def exec_balas_yu_alg(G):
+def exec_balas_yu_alg(G, case):
     BYMethod = BYBScheme()
-    mis_output = BYMethod.branch_scheme(G, 2)
+    mis_output = BYMethod.branch_scheme(G, case)
     return mis_output
 
-def exec_balas_xue_alg(G, W):
+def exec_balas_xue_alg(G, W, case):
     BXMethod = BXWBScheme()
-    wmis_output = BXMethod.branch_scheme(G, W, 1)
+    wmis_output = BXMethod.branch_scheme(G, W, case)
     return wmis_output
 
 def exec_babel_alg(G, W):
     BMethod = BWCCMethod(G, W) 
     BMethod.babel_scheme()
-    pass
 
 def main(argc, argv):
 
-    G = erdos_renyi_graph(30, 0.5)
-
-    # # sparse_matrix = mmread("./DIMACS_graphs/c-fat200-1.mtx")
-    # # G = nx.Graph(sparse_matrix)
+    G = erdos_renyi_graph(25, 0.5)
 
     print("Executing the Balas-Yu Branching Scheme\n")
 
@@ -75,7 +71,7 @@ def main(argc, argv):
     count, limit = 0, 10
 
     while True:
-        opt_mis = exec_balas_yu_alg(G)
+        opt_mis = exec_balas_yu_alg(G, 2)
         total_sum = 0
         for v in opt_mis:
             total_sum = total_sum + 1
@@ -136,7 +132,7 @@ def main(argc, argv):
         W = {}
         for v in G.nodes: W[v] = random.uniform(1.5, 5.5)
         
-        opt_wmis = exec_balas_xue_alg(G, W)
+        opt_wmis = exec_balas_xue_alg(G, W, 2)
         total_weight = 0
         for v in opt_wmis:
             total_weight = total_weight + W[v]
@@ -191,9 +187,64 @@ def main(argc, argv):
         GPlot.disp_weight_graph(G, W)
 
     # Weighted Clique Cover by Babel 
-    W = {}
-    for v in G.nodes: W[v] = random.randint(1, 101)
-    exec_babel_alg(G, W) 
+    print("Executing the Babel Algorithm\n")
+
+    tol = 1e-8
+    count, limit = 0, 10
+    while True:
+        W = {}
+        for v in G.nodes: W[v] = random.randint(1, 51)
+
+        wmis_output = exec_balas_xue_alg(G, W, 3)
+        wmis_model = WMISIP(G, W)
+        wmis_model.optimize()
+        optimal_weight = wmis_model.opt_cost()
+
+        total_weight = sum(W[v] for v in wmis_output)
+        if abs(total_weight - optimal_weight) < 1e-8:
+            count += 1 
+            print(f"Case {count} / {limit}: Success!")
+        else: 
+            print(f"Case {count} / {limit}: Fail! Terminating at an invalid output ...\n")
+            break
+
+        if count == 10: 
+            print(f"\nAll {count} cases passed! Great Job!\n")
+            break
+
+    if count < limit:
+        print(f"Expected Output:  {wmis_model.opt_soln()}")
+        print(f"Branching Output: {opt_wmis}\n")
+
+        print(f"Expected Weight:  {wmis_model.opt_cost()}")
+        print(f"Branching Weight: {total_weight}\n")
+
+        A, B = opt_wmis, wmis_model.opt_soln()
+        AnB, BnA = [], []
+
+        for v in A:
+            if v not in B: AnB.append(v)
+
+        for v in B:
+            if v not in A: BnA.append(v)
+
+        if AnB == []: print("A is a subset of B\n")
+        else:
+            print("A is not a subset of B - Algorithm \ Expected")
+            print(f"Missing entries: {AnB}\n")
+        if BnA == []: print(print("B is a subset of A\n"))
+        else:
+            print("B is not a subset of A - Expected \ Algorithm")
+            print(f"Missing entries: {BnA}\n")
+
+        symm_diff = list(set(A).symmetric_difference(B))
+        
+        print(f"Vertices: {G.nodes}")
+        print(f"Edges: {G.edges}")
+        print(f"Weights: {W}")
+
+        GPlot = GraphPlot()
+        GPlot.disp_weight_graph(G, W)
     
 if __name__ == "__main__":
     if len(sys.argv) < 2: 
